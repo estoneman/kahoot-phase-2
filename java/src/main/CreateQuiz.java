@@ -110,10 +110,17 @@ public class CreateQuiz {
 
                                 if (option.equals(""))
                                     creatingOptions = false;
+                                else if (arrayList.size() == 1)
+                                    multipleChoiceKeyString += ":[" + option;
                                 else {
-                                    multipleChoiceKeyString += " " + option;//concatenates option to the end of the question in order to fit our consistent question modeling
+                                    multipleChoiceKeyString += ", " + option;//concatenates option to the end of the question in order to fit our consistent question modeling
                                 }
                             }
+
+                            multipleChoiceKeyString += "]";
+
+                            //multipleChoiceKeyString is in the form ":[option(0), option(1),...,option(n)]"
+                            //the colon separates the question from the "array" of options
 
                             System.out.println("Enter the answer to '" + question + "': ");
                             answer = keyboard.nextLine();
