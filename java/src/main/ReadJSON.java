@@ -20,6 +20,12 @@ public class ReadJSON {
     //general iterator to iterate through JSONArray above
     Iterator<?> iter;
 
+    //file to be read by methods
+    Object fileRead;
+
+    //general JSONObject to be cast to fileRead in order to use json-simple libraries
+    JSONObject jsonObject;
+
 //    public static void main(String[] args) {
 //
 //        try {
@@ -38,94 +44,144 @@ public class ReadJSON {
 //    }
 
     //reads the true false json file into a hash map
-    public HashMap<String, String> readTFObject(JSONObject jsonObject) {
-        tFHashMap = new HashMap<String, String>();
+    public HashMap<String, String> readTFObject() {
+        try {
+            fileRead = new JSONParser().parse(new FileReader(new CreateQuiz().getTRUE_FALSE_PATH()));
 
-        jsonArray = (JSONArray) jsonObject.get("tf");//array of true false question and answers
-        iter = jsonArray.iterator();//iterate through array of objects
+            jsonObject = (JSONObject) fileRead;
 
-        String question = "";
-        String answer = "";
+            tFHashMap = new HashMap<String, String>();
 
-        while (iter.hasNext()) {
-            questionAnswerArray = parseJSONObject(iter.next());
+            jsonArray = (JSONArray) jsonObject.get("tf");//array of true false question and answers
+            iter = jsonArray.iterator();//iterate through array of objects
 
-            question = questionAnswerArray[0];//stores the question for each question and answer pair
-            answer = questionAnswerArray[1];//    ""   ""   answer  ""   ""     ""    ""    ""    ""
+            String question = "";
+            String answer = "";
 
-            tFHashMap.put(question, answer);//populates hash map for true false questions and answers
+            while (iter.hasNext()) {
+                questionAnswerArray = parseJSONObject(iter.next());
+
+                question = questionAnswerArray[0].substring(1, questionAnswerArray[0].length() - 1);//stores the question for each question and answer pair
+                answer = questionAnswerArray[1].substring(1, questionAnswerArray[1].length() - 1);//    ""   ""   answer  ""   ""     ""    ""    ""    ""
+
+                tFHashMap.put(question, answer);//populates hash map for true false questions and answers
+            }
+
+            return tFHashMap;
         }
 
-        return tFHashMap;
+        catch(Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+
 
     }
 
     //reads multiple choice json file into hashmap
     public HashMap<String, String> readMCObject(JSONObject jsonObject) {
-        mCHashMap = new HashMap<String, String>();
+        try {
+            fileRead = new JSONParser().parse(new FileReader(new CreateQuiz().getMULTIPLE_CHOICE_PATH()));
 
-        jsonArray = (JSONArray) jsonObject.get("mc");
-        iter = jsonArray.iterator();
+            jsonObject = (JSONObject) fileRead;
 
-        String question = "";
-        String options = "";
-        String answer = "";
+            mCHashMap = new HashMap<String, String>();
 
-        while (iter.hasNext()) {
-            questionAnswerArray = parseJSONObject(iter.next());
+            jsonArray = (JSONArray) jsonObject.get("mc");
+            iter = jsonArray.iterator();
 
-            question = questionAnswerArray[0];
-            options = questionAnswerArray[1];
-            answer = questionAnswerArray[2];
+            String question = "";
+            String options = "";
+            String answer = "";
 
-            mCHashMap.put(question, answer);
+            while (iter.hasNext()) {
+                questionAnswerArray = parseJSONObject(iter.next());
+
+                question = questionAnswerArray[0];
+                options = questionAnswerArray[1];
+                answer = questionAnswerArray[2];
+
+                mCHashMap.put(question, answer);
+            }
+
+            return mCHashMap;
         }
 
-        return mCHashMap;
+        catch(Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+
     }
 
     //reads fill in the blank json file into hash map
     public HashMap<String, String> readFBObject(JSONObject jsonObject) {
-        fBHashMap = new HashMap<String, String>();
+        try {
 
-        jsonArray = (JSONArray) jsonObject.get("fb");
-        iter = jsonArray.iterator();
+            fileRead = new JSONParser().parse(new FileReader(new CreateQuiz().getFILL_IN_BLANK_PATH()));
 
-        String question = "";
-        String answer = "";
+            jsonObject = (JSONObject) fileRead;
 
-        while (iter.hasNext()) {
-            questionAnswerArray = parseJSONObject(iter.next());
+            fBHashMap = new HashMap<String, String>();
 
-            question = questionAnswerArray[0];
-            answer = questionAnswerArray[1];
+            jsonArray = (JSONArray) jsonObject.get("fb");
+            iter = jsonArray.iterator();
 
-            fBHashMap.put(question, answer);
+            String question = "";
+            String answer = "";
+
+            while (iter.hasNext()) {
+                questionAnswerArray = parseJSONObject(iter.next());
+
+                question = questionAnswerArray[0];
+                answer = questionAnswerArray[1];
+
+                fBHashMap.put(question, answer);
+            }
+
+            return fBHashMap;
         }
 
-        return fBHashMap;
+        catch(Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+
     }
 
     //reads matching json file into hash map
     public HashMap<String, String> readMObject(JSONObject jsonObject) {
-        HashMap<String, String> mHashMap = new HashMap<String, String>();
 
-        jsonArray = (JSONArray) jsonObject.get("m");
-        iter = jsonArray.iterator();
+        try {
+            fileRead = new JSONParser().parse(new FileReader(new CreateQuiz().getFILL_IN_BLANK_PATH()));
 
-        String term = "";
-        String matchedTerm = "";
+            jsonObject = (JSONObject) fileRead;
 
-        while (iter.hasNext()) {
-            questionAnswerArray = parseJSONObject(iter.next());
+            HashMap<String, String> mHashMap = new HashMap<String, String>();
 
-            term = questionAnswerArray[0];
-            matchedTerm = questionAnswerArray[1];
+            jsonArray = (JSONArray) jsonObject.get("m");
+            iter = jsonArray.iterator();
 
-            mHashMap.put(term, matchedTerm);
+            String term = "";
+            String matchedTerm = "";
+
+            while (iter.hasNext()) {
+                questionAnswerArray = parseJSONObject(iter.next());
+
+                term = questionAnswerArray[0];
+                matchedTerm = questionAnswerArray[1];
+
+                mHashMap.put(term, matchedTerm);
+            }
+
+            return mHashMap;
         }
 
-        return mHashMap;
+        catch(Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+
     }
 
     //allows for easier parsing by splitting the already formatted json file into separate indices
