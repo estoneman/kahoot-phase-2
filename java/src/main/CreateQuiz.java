@@ -7,10 +7,10 @@ public class CreateQuiz {
 
     //file paths for my (Ethan's) computer
     //Will have to be different for your computers (Ryn, Tom, and Audrey)
-    String TRUE_FALSE_PATH = "/Users/Ethan/StudioProjects/COMP330/json/trueFalse.json";
-    String MULTIPLE_CHOICE_PATH = "/Users/Ethan/StudioProjects/COMP330/json/multipleChoice.json";
-    String FILL_IN_BLANK_PATH = "/Users/Ethan/StudioProjects/COMP330/json/fillInBlank.json";
-    String MATCHING_PATH = "/Users/Ethan/StudioProjects/COMP330/json/matching.json";
+    String TRUE_FALSE_PATH = "/Users/Ethan/StudioProjects/kahoot-phase-2/json/trueFalse.json";
+    String MULTIPLE_CHOICE_PATH = "/Users/Ethan/StudioProjects/kahoot-phase-2/json/multipleChoice.json";
+    String FILL_IN_BLANK_PATH = "/Users/Ethan/StudioProjects/kahoot-phase-2/json/fillInBlank.json";
+    String MATCHING_PATH = "/Users/Ethan/StudioProjects/kahoot-phase-2/json/matching.json";
 
     FileWriter fileWriter;//single file writer that writes to all of our json files
 
