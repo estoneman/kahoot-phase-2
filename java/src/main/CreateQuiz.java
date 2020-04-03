@@ -220,7 +220,6 @@ public class CreateQuiz {
 
     }
 
-    //writes to given file with given JSONObject
     public void writeToFile(String filePath, JSONObject jsonObject) {
         try {
             fileWriter = new FileWriter(filePath);
@@ -231,6 +230,22 @@ public class CreateQuiz {
         catch (Exception e) {
             System.out.println(e.toString());
         }
+    }
+
+    public String getFILL_IN_BLANK_PATH() {
+        return FILL_IN_BLANK_PATH;
+    }
+
+    public String getMATCHING_PATH() {
+        return MATCHING_PATH;
+    }
+
+    public String getMULTIPLE_CHOICE_PATH() {
+        return MULTIPLE_CHOICE_PATH;
+    }
+
+    public String getTRUE_FALSE_PATH() {
+        return TRUE_FALSE_PATH;
     }
 
     //for testing purposes
