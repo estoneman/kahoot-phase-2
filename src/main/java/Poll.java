@@ -21,12 +21,11 @@ class Poll {
     private static Scanner keyboard = new Scanner(System.in);
 
     //class that will be initially run by Client class
-    @SuppressWarnings("unchecked")
     static JSONArray takePoll() throws IOException, ParseException {
         Object jsonFile;
 
         if (PollGenerator.getFileToBeRead() == null)
-            jsonFile = new JSONParser().parse(new FileReader("poll.json"));
+            jsonFile = new JSONParser().parse(new FileReader("defaultPoll.json"));
         else
             jsonFile = new JSONParser().parse(new FileReader(PollGenerator.getFileToBeRead()));
 
@@ -42,7 +41,7 @@ class Poll {
     }
 
     @SuppressWarnings("unchecked")
-    private static JSONArray outputQuestions(JSONArray questionArray) throws IOException {
+    private static JSONArray outputQuestions(JSONArray questionArray) {
 
         JSONArray resultsArray = new JSONArray();
 

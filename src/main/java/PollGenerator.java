@@ -23,19 +23,19 @@ class PollGenerator {
 
     private static final Scanner keyboard = new Scanner(System.in);
 
-    public static String getSuccessMessage() {
+    static String getSuccessMessage() {
         return SUCCESS_MESSAGE;
     }
 
-    public static void setFileToBeRead(File file) {
+    private static void setFileToBeRead(File file) {
         fileToBeWritten = file;
     }
 
-    public static File getFileToBeRead() {
+    static File getFileToBeRead() {
         return fileToBeWritten;
     }
 
-    public static String getErrorMessage() {
+    static String getErrorMessage() {
         return ERROR_MESSAGE;
     }
 
@@ -53,7 +53,7 @@ class PollGenerator {
             if (question.equals("done"))
                 break;//loop condition
 
-            poll = populateJSONArrayElement(question, number, poll);
+            populateJSONArrayElement(question, number, poll);
             number++;
 
         }
@@ -62,7 +62,7 @@ class PollGenerator {
 
     }
 
-    private static JSONArray populateJSONArrayElement(String question, int number, JSONArray questionArray) {
+    private static void populateJSONArrayElement(String question, int number, JSONArray questionArray) {
 
         String option;
         int optionNumber = 1;
@@ -80,7 +80,6 @@ class PollGenerator {
 
         questionArray.add(writePollQuestion(number, question, optionsList));
 
-        return questionArray;
     }
 
     private static JSONObject writePollQuestion(int number, String question, List<String> optionsList) {
@@ -137,18 +136,11 @@ class PollGenerator {
 
     private static boolean hasPeriod(File file) {
         //checks if user entered in a '.'
-        if (file.getName().contains(".")) {
-            return true;
-        }
-
-        return false;
+        return file.getName().contains(".");
     }
 
     private static boolean exists(File file) {
-        if (new File(file.getName() + ".json").exists() || file.exists()) {
-            return true;
-        }
-        return false;
+        return new File(file.getName() + ".json").exists() || file.exists();
     }
 
     //validates the creation of desired filename

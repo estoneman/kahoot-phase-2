@@ -10,7 +10,7 @@ public class Client {
 
         String input;
 
-        System.out.println("Would you like to create a quiz or a poll?\n Enter 'q' for quiz and 'p' for polling: ");
+        System.out.println("Would you like to create a quiz or a poll?\nEnter 'q' for quiz and 'p' for polling: ");
         String pollOrQuiz = sc.nextLine().toLowerCase().trim();
 
         if (pollOrQuiz.equals("p")) {
