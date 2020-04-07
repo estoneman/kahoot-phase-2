@@ -16,7 +16,7 @@ public class Client {
         if (pollOrQuiz.equals("p")) {
             PollGenerator.generatePoll();
 
-            System.out.println("Enter your name to take the poll or enter 'done' to exit: ");
+            System.out.println("Would you like to take the created poll? If not, enter 'done' to exit: ");
             input = sc.nextLine();
 
             if (!input.equals("done")) {
