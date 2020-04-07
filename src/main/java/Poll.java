@@ -20,14 +20,24 @@ class Poll {
 
     private static Scanner keyboard = new Scanner(System.in);
 
-    public static void main(String[] args) throws IOException, ParseException {
-        takePoll();
+    public static void main(String[] args) {
+        try {
+            takePoll();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //class that will be initially run by Client class
     @SuppressWarnings("unchecked")
     static JSONArray takePoll() throws IOException, ParseException {
-        Object jsonFile = new JSONParser().parse(new FileReader("poll.json"));
+        Object jsonFile;
+
+        if (PollGenerator.getFileToBeRead() == null)
+            jsonFile = new JSONParser().parse(new FileReader("poll.json"));
+        else
+            jsonFile = new JSONParser().parse(new FileReader(PollGenerator.getFileToBeRead()));
 
         JSONObject questionObject = (JSONObject) jsonFile; //Make json file able to be parsed with json-simple library
         JSONArray questionArray = (JSONArray) questionObject.get("Questions");//access the questions object
@@ -35,9 +45,9 @@ class Poll {
 
         JSONArray results = outputQuestions(questionArray);
 
-        writeToJSONFile(PollGenerator.getFileName(), results);
+        writeToJSONFile(results);
 
-        return questionArray;
+        return results;
     }
 
     @SuppressWarnings("unchecked")
@@ -96,7 +106,7 @@ class Poll {
         System.out.println(finalOutput);
     }
 
-    private static void writeToJSONFile(String filename, JSONArray jsonArray) throws IOException {
+    private static void writeToJSONFile(JSONArray jsonArray) throws IOException {
 
         System.out.println("Would you like to save your results?(y/n): ");
         String userAnswer = keyboard.nextLine().toLowerCase().trim();
@@ -106,10 +116,10 @@ class Poll {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();//each key, value pair is one line and each array index gets their own line for improved readability
             String finalOutput = gson.toJson(jsonArray);//converts nicely formatted gson builder into string to be written to <filename>
 
-            File file = makeFile();//file to be created and checked to see if it passes file creation rules
+            File file = PollGenerator.makeFile();//file to be created and checked to see if it passes file creation rules
 
             //Creates reference to a file writer with given filename
-            FileWriter resultJSONFile = new FileWriter(file.getName());
+            FileWriter resultJSONFile = new FileWriter(file);
 
             try {
                 resultJSONFile.write(finalOutput);
@@ -126,45 +136,6 @@ class Poll {
 
         else
             System.out.println("goodbye");
-
-    }
-
-    private static boolean hasPeriod(File file) {
-        //checks if user entered in a '.'
-        if (file.getName().contains(".")) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static boolean exists(File file) {
-        if (new File(file.getName() + ".json").exists() || file.exists()) {
-            return true;
-        }
-        return false;
-    }
-
-    //validates the creation of desired filename
-    private static File makeFile() {
-        System.out.println("What would you like to name the file?: ");
-        String filename = keyboard.nextLine();
-
-        File file = new File(filename);//file to be written
-
-        while (exists(file)) {
-            System.out.println("File already, exists: ");
-            filename = keyboard.nextLine();
-            file = new File(filename);
-        }
-
-        while (hasPeriod(file)) {
-            System.out.println("Remove '.' : '.json' will be added for you: ");
-            filename = keyboard.nextLine();
-            file = new File(filename);
-        }
-
-        return new File(filename + ".json");
 
     }
 
