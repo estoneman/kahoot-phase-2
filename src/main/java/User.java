@@ -1,3 +1,6 @@
+//DO NOT RUN THIS CLASS ON ITS OWN, IT WILL OUTPUT MANY ERRORS
+//IT IS NOT WORTH TO FIX BECAUSE WE ARE NOT USING THIS CLASS
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 //writer

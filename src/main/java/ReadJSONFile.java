@@ -10,6 +10,8 @@ import java.util.*;
 //in order for these import statements to work I used the following linux command:
 //export CLASSPATH=$CLASSPATH:/path/to/json-simple.jar/file
 
+//DO NOT RUN THIS CLASS BY ITSELF, IT WILL FAIL TRYING TO OPEN JSON FILES
+
 class ReadJSONFile {
 
     //time complexity of O(2n^2) (not 100% sure)
@@ -77,12 +79,12 @@ class ReadJSONFile {
         return result;
     }
 
-    public static void main(String[] args) {
-        HashMap<String, String> hm = new HashMap<String, String>();
-        hm = populateHashMap(hm);
-        System.out.println(hm);
-        System.out.println("reached end of main");
-    }
+//    public static void main(String[] args) {
+//        HashMap<String, String> hm = new HashMap<String, String>();
+//        hm = populateHashMap(hm);
+//        System.out.println(hm);
+//        System.out.println("reached end of main");
+//    }
 
     //get key and value pair
 //    public HashMap<String, String> getJSONHashMap() {
