@@ -1,2 +1,2 @@
 # Clickers
-## Quizzing Application
+### Quizzing Application
