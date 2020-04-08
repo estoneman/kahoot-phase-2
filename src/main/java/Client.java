@@ -10,13 +10,13 @@ public class Client {
 
         String input;
 
-        System.out.println("Would you like to create a quiz or a poll?\n Enter 'q' for quiz and 'p' for polling: ");
+        System.out.println("Would you like to create a quiz or a poll?\nEnter 'q' for quiz and 'p' for polling: ");
         String pollOrQuiz = sc.nextLine().toLowerCase().trim();
 
         if (pollOrQuiz.equals("p")) {
             PollGenerator.generatePoll();
 
-            System.out.println("Enter your name to take the poll or enter 'done' to exit: ");
+            System.out.println("Would you like to take the created poll? If not, enter 'done' to exit: ");
             input = sc.nextLine();
 
             if (!input.equals("done")) {

@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -15,21 +16,26 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 class PollGenerator {
 
-    private static final String FILENAME = "poll.json";
     private static final String SUCCESS_MESSAGE = "File successfully written";
     private static final String ERROR_MESSAGE = "File could not be written";
 
+    private static File fileToBeWritten;
+
     private static final Scanner keyboard = new Scanner(System.in);
 
-    public static String getFileName() {
-        return FILENAME;
-    }
-
-    public static String getSuccessMessage() {
+    static String getSuccessMessage() {
         return SUCCESS_MESSAGE;
     }
 
-    public static String getErrorMessage() {
+    private static void setFileToBeRead(File file) {
+        fileToBeWritten = file;
+    }
+
+    static File getFileToBeRead() {
+        return fileToBeWritten;
+    }
+
+    static String getErrorMessage() {
         return ERROR_MESSAGE;
     }
 
@@ -47,16 +53,16 @@ class PollGenerator {
             if (question.equals("done"))
                 break;//loop condition
 
-            poll = populateJSONArrayElement(question, number, poll);
+            populateJSONArrayElement(question, number, poll);
             number++;
 
         }
 
-        writeToJSONFile(FILENAME, poll);
+        writeToJSONFile(poll);
 
     }
 
-    private static JSONArray populateJSONArrayElement(String question, int number, JSONArray questionArray) {
+    private static void populateJSONArrayElement(String question, int number, JSONArray questionArray) {
 
         String option;
         int optionNumber = 1;
@@ -74,7 +80,6 @@ class PollGenerator {
 
         questionArray.add(writePollQuestion(number, question, optionsList));
 
-        return questionArray;
     }
 
     private static JSONObject writePollQuestion(int number, String question, List<String> optionsList) {
@@ -83,7 +88,6 @@ class PollGenerator {
         questionObject.put("Number", number);
         questionObject.put("Type", "Poll");
         questionObject.put("Question", question);
-        questionObject.put("Answer", "");
 
         JSONArray optionsJSONArray = new JSONArray();
 
@@ -102,7 +106,7 @@ class PollGenerator {
         return questionObject;
     }
 
-    private static void writeToJSONFile(String filename, JSONArray jsonArray) throws IOException {
+    private static void writeToJSONFile(JSONArray jsonArray) throws IOException {
         //formats single line json string to a better, more readable json string using gson library
         JSONObject output = new JSONObject();
 
@@ -110,20 +114,56 @@ class PollGenerator {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();//each key, value pair is one line and each array index gets their own line for improved readability
         String finalOutput = gson.toJson(output);//converts nicely formatted gson builder into string to be written to <filename>
 
+        //allows user to save their poll with desired name
+        File fileToBeWritten = makeFile();
+        setFileToBeRead(fileToBeWritten);
+
         //Writes quiz JSON file
-        FileWriter pollJSONFile = new FileWriter(filename);
+        FileWriter pollJSONFile = new FileWriter(fileToBeWritten);
 
         try {
             pollJSONFile.write(finalOutput);
-            System.out.println(SUCCESS_MESSAGE + " -> " + filename);
+            System.out.println(SUCCESS_MESSAGE + " -> " + fileToBeWritten.getName());
 
         } catch (IOException e) {
-            System.out.println(ERROR_MESSAGE + " -> " + filename);
+            System.out.println(ERROR_MESSAGE + " -> " + fileToBeWritten.getName());
             e.printStackTrace();
         } finally {
             pollJSONFile.flush();
             pollJSONFile.close();
         }
+    }
+
+    private static boolean hasPeriod(File file) {
+        //checks if user entered in a '.'
+        return file.getName().contains(".");
+    }
+
+    private static boolean exists(File file) {
+        return new File(file.getName() + ".json").exists() || file.exists();
+    }
+
+    //validates the creation of desired filename
+    static File makeFile() {
+        System.out.println("What would you like to name the file?: ");
+        String filename = keyboard.nextLine();
+
+        File file = new File(filename);//file to be written
+
+        while (exists(file)) {
+            System.out.println("File already, exists: ");
+            filename = keyboard.nextLine();
+            file = new File(filename);
+        }
+
+        while (hasPeriod(file)) {
+            System.out.println("Remove '.' : '.json' will be added for you: ");
+            filename = keyboard.nextLine();
+            file = new File(filename);
+        }
+
+        return new File(filename + ".json");
+
     }
 
 }

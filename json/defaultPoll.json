@@ -1,0 +1,24 @@
+{
+  "Questions": [
+    {
+      "Options": [
+        "\u003coption 1 is inserted here\u003e",
+        "\u003coption 2 is inserted here\u003e",
+        "\u003coption n is inserted here\u003e"
+      ],
+      "Type": "Poll",
+      "Number": 1,
+      "Question": "\u003cquestion is inserted here\u003e"
+    },
+    {
+      "Options": [
+        "\u003coption 1 is inserted here\u003e",
+        "\u003coption 2 is inserted here\u003e",
+        "\u003coption n is inserted here\u003e"
+      ],
+      "Type": "Poll",
+      "Number": 2,
+      "Question": "\u003cquestion 2 is inserted here\u003e"
+    }
+  ]
+}
