@@ -131,8 +131,8 @@ class PollGenerator {
         String finalOutput = gson.toJson(preFormatJSONObject);//converts nicely formatted gson object into string to be written to desired destination
 
         //allows user to save their poll with desired name
-        File fileToBeWritten = Check.makeFile();
-        setFileToBeRead(fileToBeWritten);
+        File fileToBeWritten = Check.makeFile();//Check.makeFile() checks to see if the file is valid through a series of tests
+        setFileToBeRead(fileToBeWritten);//sets the file that will be read by the poll taker according to what they named if
 
         //Writes quiz JSON file
         FileWriter pollJSONFile = new FileWriter(fileToBeWritten);
