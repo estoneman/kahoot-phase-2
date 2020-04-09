@@ -1,1 +1,2 @@
-# kahoot-phase-2
+# Clickers
+### Quizzing Application
