@@ -16,15 +16,28 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 class PollGenerator {
 
+    //If file is written successfully, SUCCESS_MESSAGE is printed
     private static final String SUCCESS_MESSAGE = "File successfully written";
+
+    //If file is written unsuccessfully, ERROR_MESSAGE is printed
     private static final String ERROR_MESSAGE = "File could not be written";
 
+    //questions and their respective information will be written to this file
     private static File fileToBeWritten;
 
+    //how the user interacts with our program (for now)
     private static final Scanner keyboard = new Scanner(System.in);
+
+    public static void main(String[] args) throws IOException {
+        generatePoll();
+    }
 
     static String getSuccessMessage() {
         return SUCCESS_MESSAGE;
+    }
+
+    static String getErrorMessage() {
+        return ERROR_MESSAGE;
     }
 
     private static void setFileToBeRead(File file) {
@@ -35,11 +48,8 @@ class PollGenerator {
         return fileToBeWritten;
     }
 
-    static String getErrorMessage() {
-        return ERROR_MESSAGE;
-    }
-
     //called first by Client class
+    //creates the poll and writes to json file
     static void generatePoll() throws IOException {
         //create the poll
         JSONArray poll = new JSONArray();
@@ -62,6 +72,7 @@ class PollGenerator {
 
     }
 
+    //populates a JSONObject and adds to resultant JSONArray that will be used for writing to the desired json file
     private static void populateJSONArrayElement(String question, int number, JSONArray questionArray) {
 
         String option;
@@ -69,6 +80,7 @@ class PollGenerator {
 
         List<String> optionsList = new ArrayList<>();
 
+        //loop that asks user for all options for the given question
         while(true) {
             System.out.println("Enter option " + optionNumber + " or enter 'done' to stop adding options: ");
             option = keyboard.nextLine().toLowerCase().trim();
@@ -82,6 +94,8 @@ class PollGenerator {
 
     }
 
+    //helper method for populateJSONArrayElement which pairs question info with the question object
+    //returns packed JSONObject as a whole
     private static JSONObject writePollQuestion(int number, String question, List<String> optionsList) {
         JSONObject questionObject = new JSONObject();
 
@@ -91,6 +105,7 @@ class PollGenerator {
 
         JSONArray optionsJSONArray = new JSONArray();
 
+        //adds all options into the options field of written json file
         optionsJSONArray.addAll(optionsList);
 
 //        optionsList.forEach(option -> optionsJSONArray.add(option));
@@ -106,64 +121,36 @@ class PollGenerator {
         return questionObject;
     }
 
+    //writes and saves all changes to a json file which can be named by the user however they would like, under some guidelines
     private static void writeToJSONFile(JSONArray jsonArray) throws IOException {
         //formats single line json string to a better, more readable json string using gson library
-        JSONObject output = new JSONObject();
+        JSONObject preFormatJSONObject = new JSONObject();
 
-        output.put("Questions", jsonArray);//populates the output JSONObject in a non-formatted manner
+        preFormatJSONObject.put("Questions", jsonArray);//populates the output JSONObject in a non-formatted manner
         Gson gson = new GsonBuilder().setPrettyPrinting().create();//each key, value pair is one line and each array index gets their own line for improved readability
-        String finalOutput = gson.toJson(output);//converts nicely formatted gson builder into string to be written to <filename>
+        String finalOutput = gson.toJson(preFormatJSONObject);//converts nicely formatted gson object into string to be written to desired destination
 
         //allows user to save their poll with desired name
-        File fileToBeWritten = makeFile();
-        setFileToBeRead(fileToBeWritten);
+        File fileToBeWritten = Check.makeFile();//Check.makeFile() checks to see if the file is valid through a series of tests
+        setFileToBeRead(fileToBeWritten);//sets the file that will be read by the poll taker according to what they named if
 
         //Writes quiz JSON file
         FileWriter pollJSONFile = new FileWriter(fileToBeWritten);
 
         try {
             pollJSONFile.write(finalOutput);
-            System.out.println(SUCCESS_MESSAGE + " -> " + fileToBeWritten.getName());
+            System.out.println("*-------------------------------------------*");
+            System.out.println(getSuccessMessage() + " -> " + fileToBeWritten.getName());
+            System.out.println("*-------------------------------------------*");
 
         } catch (IOException e) {
-            System.out.println(ERROR_MESSAGE + " -> " + fileToBeWritten.getName());
+            System.out.println("*-------------------------------------------*");
+            System.out.println(getErrorMessage() + " -> " + fileToBeWritten.getName());
+            System.out.println("*-------------------------------------------*");
             e.printStackTrace();
         } finally {
-            pollJSONFile.flush();
-            pollJSONFile.close();
+            pollJSONFile.flush();//flushes the writer object
+            pollJSONFile.close();//closes the input stream
         }
     }
-
-    private static boolean hasPeriod(File file) {
-        //checks if user entered in a '.'
-        return file.getName().contains(".");
-    }
-
-    private static boolean exists(File file) {
-        return new File(file.getName() + ".json").exists() || file.exists();
-    }
-
-    //validates the creation of desired filename
-    static File makeFile() {
-        System.out.println("What would you like to name the file?: ");
-        String filename = keyboard.nextLine();
-
-        File file = new File(filename);//file to be written
-
-        while (exists(file)) {
-            System.out.println("File already, exists: ");
-            filename = keyboard.nextLine();
-            file = new File(filename);
-        }
-
-        while (hasPeriod(file)) {
-            System.out.println("Remove '.' : '.json' will be added for you: ");
-            filename = keyboard.nextLine();
-            file = new File(filename);
-        }
-
-        return new File(filename + ".json");
-
-    }
-
 }

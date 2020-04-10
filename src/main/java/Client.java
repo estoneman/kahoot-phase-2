@@ -13,22 +13,27 @@ public class Client {
         System.out.println("Would you like to create a quiz or a poll?\nEnter 'q' for quiz and 'p' for polling: ");
         String pollOrQuiz = sc.nextLine().toLowerCase().trim();
 
+        while (!Check.isValidNonNumericalInput(pollOrQuiz)) {
+            pollOrQuiz = sc.nextLine().toLowerCase().trim();
+        }
+
         if (pollOrQuiz.equals("p")) {
             PollGenerator.generatePoll();
 
-            System.out.println("Would you like to take the created poll? If not, enter 'done' to exit: ");
-            input = sc.nextLine();
+            System.out.println("Would you like to take the created poll(y/n)? If not, enter 'done' to exit: ");
+            input = sc.nextLine().toLowerCase().trim();
 
-            if (!input.equals("done")) {
+            while (!Check.isValidNonNumericalInput(input)) {
+                input = sc.nextLine().toLowerCase().trim();
+            }
+
+            if (input.equals("yes") || input.equals("y")) {
                 JSONArray pollResults = Poll.takePoll();
-
                 Poll.printJSONArray(pollResults);
             }
         }
         else {
             //Write the quiz
-//        QuizGenerator quiz = new QuizGenerator();
-//        quiz.generateQuiz();
             QuizGenerator.generateQuiz();
 
             System.out.println("\nEnter your name to take the quiz or enter done to exit:\n");
@@ -37,7 +42,6 @@ public class Client {
             if (!input.equals("done")) {
 
                 //If user wants to take the quiz, calls Quiz method
-//            Quiz read = new Quiz();
                 JSONArray results = Quiz.takeQuiz(input);
 
                 //Calls printResults method in Quiz.java to record user's results
@@ -45,4 +49,7 @@ public class Client {
             }
         }
     }
+
+
+
 }
