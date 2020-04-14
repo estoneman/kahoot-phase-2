@@ -1,4 +1,7 @@
 import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 class Check {
@@ -72,6 +75,22 @@ class Check {
 
         return new File(filename + ".json");
 
+    }
+
+    //https://stackoverflow.com/questions/2942788/check-if-table-exists
+    static boolean tableExists(String tableName) throws SQLException {
+
+        Connection connection = ConnectToDatabase.connectToPollDB();
+
+        ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName, null);
+
+        while (resultSet.next()) {
+            String duplicateTableName = resultSet.getString(tableName);
+            if (duplicateTableName != null && duplicateTableName.equals(tableName))
+                return true;
+        }
+
+        return false;
     }
 
 }
