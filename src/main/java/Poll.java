@@ -21,7 +21,7 @@ class Poll {
     private static Scanner keyboard = new Scanner(System.in);
 
     //class that will be initially run by Client class
-    static JSONArray takePoll() throws IOException, ParseException {
+    static JSONArray takePoll(String name) throws IOException, ParseException {
         Object jsonFile;
 
         if (PollGenerator.getFileToBeRead() == null)
@@ -34,7 +34,7 @@ class Poll {
         Collections.shuffle(questionArray, new Random(System.nanoTime())); //randomize question order
 
         //reads each question object and stores the given response as a JSONArray
-        JSONArray results = outputQuestions(questionArray);
+        JSONArray results = outputQuestions(questionArray, name);
 
         //writes results to json file
         writeToJSONFile(results);
@@ -43,7 +43,7 @@ class Poll {
     }
 
     @SuppressWarnings("unchecked")
-    private static JSONArray outputQuestions(JSONArray questionArray) {
+    private static JSONArray outputQuestions(JSONArray questionArray, String name) {
 
         JSONArray resultsArray = new JSONArray();
 
@@ -79,7 +79,7 @@ class Poll {
                 userAnswer = keyboard.nextLine().toLowerCase().trim();
             }
 
-            resultsArray.add(addQuestionToRecord(questionDetails, userAnswer));//after each response is recorded, populate json object to be written to new json array
+            resultsArray.add(addQuestionToRecord(questionDetails, userAnswer, name));//after each response is recorded, populate json object to be written to new json array
         });//end of outer lambda expression
 
         return resultsArray;
@@ -90,12 +90,13 @@ class Poll {
     //called each time the iterator in outputQuestions() is run
     //returns fully packed JSONObject
     @SuppressWarnings("unchecked")
-    private static JSONObject addQuestionToRecord(JSONObject jsonObject, String userAnswer) {
+    private static JSONObject addQuestionToRecord(JSONObject jsonObject, String userAnswer, String name) {
         JSONObject question = new JSONObject();
 
         question.put("Number", jsonObject.get("Number"));
         question.put("Question", jsonObject.get("Question"));
         question.put("Response", userAnswer);
+        question.put("Taker", name);
 
         return question;
     }
@@ -123,20 +124,20 @@ class Poll {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();//each key, value pair is one line and each array index gets their own line for improved readability
             String finalOutput = gson.toJson(jsonArray);//converts nicely formatted gson builder into string to be written to <filename>
 
-            File file = Check.makeFile();//file to be created and checked to see if it passes file creation rules
+            //File file = Check.makeFile();//file to be created and checked to see if it passes file creation rules
 
             //Creates reference to a file writer with given filename
-            FileWriter resultJSONFile = new FileWriter(file);
+            FileWriter resultJSONFile = new FileWriter(new File("C:/Users/Ethan/StudioProjects/kahoot-phase-2/json/pollResults.json"));
 
             try {
                 resultJSONFile.write(finalOutput);
                 System.out.println("*-------------------------------------------*");
-                System.out.println(PollGenerator.getSuccessMessage() + " -> " + file.getName());
+                System.out.println(PollGenerator.getSuccessMessage() + " -> pollResults.json");
                 System.out.println("*-------------------------------------------*");
 
             } catch (IOException e) {
                 System.out.println("*-------------------------------------------*");
-                System.out.println(PollGenerator.getErrorMessage() + " -> " + file.getName());
+                System.out.println(PollGenerator.getErrorMessage() + " -> pollResults.json");
                 System.out.println("*-------------------------------------------*");
                 e.printStackTrace();
             } finally {
