@@ -18,9 +18,13 @@ public class Client {
         }
 
         if (pollOrQuiz.equals("p")) {
-            PollGenerator.generatePoll();
 
-            System.out.println("Would you like to take the created poll(y/n)? If not, enter 'done' to exit: ");
+            System.out.println("Enter your name or unique ID to identify yourself as the poll creator: ");
+            String name = sc.nextLine().toLowerCase().trim();
+
+            PollGenerator.generatePoll(name);
+
+            System.out.println("Would you like to take the created poll(y/n)? If not, enter 'done' or 'no' to exit: ");
             input = sc.nextLine().toLowerCase().trim();
 
             while (!Check.isValidNonNumericalInput(input)) {
@@ -28,9 +32,15 @@ public class Client {
             }
 
             if (input.equals("yes") || input.equals("y")) {
-                JSONArray pollResults = Poll.takePoll();
+                System.out.println("Enter your name: ");
+                name = sc.nextLine().toLowerCase().trim();
+
+                JSONArray pollResults = Poll.takePoll(name);
                 Poll.printJSONArray(pollResults);
             }
+
+            WriteToSQLServer.run();
+            ReadSQLServer.run();
         }
         else {
             //Write the quiz
@@ -49,7 +59,4 @@ public class Client {
             }
         }
     }
-
-
-
 }
