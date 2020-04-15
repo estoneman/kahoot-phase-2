@@ -47,13 +47,15 @@ class CreatePoll {
         String pollName = keyboard.nextLine().toLowerCase().trim();
 
         //if table does not already exist, create a new one
-        while (Check.tableExists(pollName, unique_identifier)) {
-            System.out.println("poll name already exists, try a new one: ");
-            pollName = keyboard.nextLine().toLowerCase().trim();
-        }
+//        while (Check.tableExists(pollName, unique_identifier)) {
+//            System.out.println("poll name already exists, try a new one: ");
+//            pollName = keyboard.nextLine().toLowerCase().trim();
+//        }
+
+        if (!Check.tableExists(pollName, unique_identifier))
+            SQLInstructions.createTable(pollName, unique_identifier);
 
         //creates table in specified database
-        SQLInstructions.createTable(pollName, unique_identifier);
 
         generatePoll();
 
