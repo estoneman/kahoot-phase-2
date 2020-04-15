@@ -1,6 +1,5 @@
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -86,13 +85,14 @@ class Check {
         try {
             connection = SQLInstructions.connectToPollDB(dBName);
 
-            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet resultSet = connection.getMetaData().getTables(dBName, null, null, new String[] {"TABLE"});
 
-            ResultSet resultSet = metaData.getTables(null, null, tableName, null);
-
-            if (resultSet.next())
+            if (resultSet.next()) {
+                resultSet.close();
                 return true;
+            }
 
+            resultSet.close();
         }
         catch (SQLException sQLE) {
             sQLE.printStackTrace();
