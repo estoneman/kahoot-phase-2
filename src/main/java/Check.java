@@ -1,5 +1,6 @@
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -78,18 +79,72 @@ class Check {
     }
 
     //https://stackoverflow.com/questions/2942788/check-if-table-exists
-    static boolean tableExists(String tableName) throws SQLException {
+    static boolean tableExists(String tableName, String dBName) {
 
-        Connection connection = ConnectToDatabase.connectToPollDB();
+        Connection connection = null;
 
-        ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName, null);
+        try {
+            connection = SQLInstructions.connectToPollDB(dBName);
 
-        while (resultSet.next()) {
-            String duplicateTableName = resultSet.getString(tableName);
-            if (duplicateTableName != null && duplicateTableName.equals(tableName))
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            ResultSet resultSet = metaData.getTables(null, null, tableName, null);
+
+            if (resultSet.next())
                 return true;
-        }
 
+        }
+        catch (SQLException sQLE) {
+            sQLE.printStackTrace();
+        }
+        finally {
+            try {
+                if (connection != null)
+                    connection.close();
+            }
+            catch (SQLException sQLE) {
+                sQLE.printStackTrace();
+            }
+        }
+        return false;
+
+    }
+
+    static boolean dBExists(String dBName) {
+
+        Connection connection = null;
+
+        try {
+            //connects to the database to check if the database exists
+            connection = SQLInstructions.connectToSQL();
+
+            //returns all of the database names inside of result set
+            ResultSet resultSet = connection.getMetaData().getCatalogs();
+
+            //loops through each database to see if it already exists
+            while (resultSet.next()) {
+                String duplicateDB = resultSet.getString(1);
+                //if it is found, then close result set and return true
+                if (duplicateDB.equals(dBName)) {
+                    resultSet.close();
+                    return true;
+                }
+            }
+
+        }
+        catch (SQLException sQLE) {
+            sQLE.printStackTrace();
+        }
+        finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+            catch (SQLException sQLE) {
+                sQLE.printStackTrace();
+            }
+        }
         return false;
     }
 
