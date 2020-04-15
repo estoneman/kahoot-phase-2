@@ -61,8 +61,11 @@ class SQLInstructions {
 
             statement = connection.createStatement();
 
+            //in case user tries to create a database with a name that is an SQL reserved keyword
+            String explicitDBName = "`" + dBName + "`";
+
             //instructions for creating databse in SQL
-            String sqlInstructions = "CREATE DATABASE " + dBName + ";";
+            String sqlInstructions = "CREATE DATABASE " + explicitDBName + ";";
 
             //execute creating new database
             statement.executeUpdate(sqlInstructions);
@@ -98,8 +101,11 @@ class SQLInstructions {
 
             statement = connection.createStatement();
 
+            //in case the user names the poll with an SQL keyword
+            String explicitTableName = "`" + tableName + "`";
+
             //instructions for creating a table in SQL
-            String sqlInstructions = "CREATE TABLE " + dBName + "." + tableName +
+            String sqlInstructions = "CREATE TABLE " + dBName + "." + explicitTableName +
                     "(QuestionNumber INT NOT NULL AUTO_INCREMENT, " +
                     " Question VARCHAR(100), " +
                     " Options VARCHAR(150), " +
