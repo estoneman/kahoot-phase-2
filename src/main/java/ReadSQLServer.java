@@ -2,7 +2,6 @@
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.Scanner;
 
@@ -30,7 +29,8 @@ class ReadSQLServer {
 
             System.out.println("Reading polling results . . .");
 
-            connection = ConnectToDatabase.connectToPollDB();
+            //change to connect to specific database
+            connection = SQLInstructions.connectToSQL();
 
             statement = connection.createStatement();
 
@@ -75,7 +75,8 @@ class ReadSQLServer {
 
             System.out.println("Reading poll questions . . .");
 
-            connection = ConnectToDatabase.connectToPollDB();
+            //change to connect to specific database
+            connection = SQLInstructions.connectToSQL();
 
             Scanner keyboard = new Scanner(System.in);
 
