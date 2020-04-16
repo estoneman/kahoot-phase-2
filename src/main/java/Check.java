@@ -89,10 +89,9 @@ class Check {
         try {
             connection = SQLInstructions.connectToPollDB(dBName);
 
-            ResultSet resultSet = connection.getMetaData().getTables(dBName, null, null, new String[] {"TABLE"});
+            ResultSet resultSet = connection.getMetaData().getTables(dBName, null, tableName, null);
 
             if (resultSet.next()) {
-                resultSet.close();
                 return true;
             }
 
