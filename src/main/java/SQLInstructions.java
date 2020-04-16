@@ -126,6 +126,7 @@ class SQLInstructions {
 
     }
 
+    //TODO rename this method
     static void createTable(String tableName, String dBName) {
 
         Connection connection = null;
@@ -143,7 +144,7 @@ class SQLInstructions {
             String sqlInstructions = "CREATE TABLE " + dBName + "." + explicitTableName +
                     "(QuestionNumber INT NOT NULL AUTO_INCREMENT, " +
                     " Question VARCHAR(100), " +
-                    " Options VARCHAR(150), " +
+                    " `Options` VARCHAR(150), " +
                     " PRIMARY KEY (QuestionNumber));";
 
             //execute creating the table
