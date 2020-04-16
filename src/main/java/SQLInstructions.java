@@ -126,8 +126,7 @@ class SQLInstructions {
 
     }
 
-    //TODO rename this method
-    static void createTable(String tableName, String dBName) {
+    static void createQuestionsTable(String tableName, String dBName) {
 
         Connection connection = null;
         Statement statement = null;
