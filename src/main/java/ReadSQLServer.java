@@ -29,8 +29,12 @@ class ReadSQLServer {
 
             System.out.println("Reading polling results . . .");
 
+<<<<<<< HEAD
+            connection = SQLInstructions.connectToPollDB();
+=======
             //change to connect to specific database
             connection = SQLInstructions.connectToSQL();
+>>>>>>> upstream/master
 
             statement = connection.createStatement();
 
@@ -75,8 +79,12 @@ class ReadSQLServer {
 
             System.out.println("Reading poll questions . . .");
 
+<<<<<<< HEAD
+            connection = SQLInstructions.connectToPollDB();
+=======
             //change to connect to specific database
             connection = SQLInstructions.connectToSQL();
+>>>>>>> upstream/master
 
             Scanner keyboard = new Scanner(System.in);
 

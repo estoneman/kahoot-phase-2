@@ -80,7 +80,11 @@ class Check {
     //https://stackoverflow.com/questions/2942788/check-if-table-exists
     static boolean tableExists(String tableName, String dBName) {
 
+<<<<<<< HEAD
+        Connection connection = SQLInstructions.connectToPollDB();
+=======
         Connection connection = null;
+>>>>>>> upstream/master
 
         try {
             connection = SQLInstructions.connectToPollDB(dBName);
