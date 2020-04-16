@@ -1,11 +1,27 @@
 import org.json.simple.parser.ParseException;
+
+import java.awt.*;
 import java.io.IOException;
 import java.util.Scanner;
 import org.json.simple.JSONArray;
 
+import javax.swing.*;
+
 public class Client {
 
     public static void main(String[] args) throws IOException, ParseException {
+
+      /**  JFrame frame = new JFrame("330 Project");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300,300);
+        JButton button1 = new JButton("Take");
+        JButton button2 = new JButton("Create");
+        JLabel label = new JLabel("Welcome! Would you like to Create or Take?");
+        frame.getContentPane().add(BorderLayout.LINE_END, button1);
+        frame.getContentPane().add(BorderLayout.NORTH, label);
+        frame.getContentPane().add(BorderLayout.LINE_START, button2);
+        frame.setVisible(true);**/
+
         Scanner sc = new Scanner(System.in);
 
         String input;
