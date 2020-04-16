@@ -18,6 +18,8 @@ public class TakePoll {
             System.out.println("Enter the name of the poll creator to search for poll");
             input = keyboard.nextLine().toLowerCase().trim();
 
+            //Check if database exists
+            //Adapted from https://www.javaartifacts.com/check-if-database-exists-using-java/
             rs = connection.getMetaData().getCatalogs();
             while (rs.next()) {
                 String catalogs = rs.getString(1);
@@ -48,6 +50,8 @@ public class TakePoll {
                     System.out.println("Please enter the poll identifier:");
                     input = keyboard.nextLine().toLowerCase().trim();
 
+                    //Check if poll exists in selected database
+                    //Adapted from https://www.rgagnon.com/javadetails/java-0485.html
                     ResultSet tables = connection.getMetaData().getTables(null, null, input, null);
                     if (tables.next()) {
                         System.out.println("Poll found.");
@@ -71,7 +75,7 @@ public class TakePoll {
 
         String pollName;
         String pollTaker;
-        String input;
+        String individualResults;
 
         if (!findPoll().equals("")) {
             try {
@@ -80,17 +84,38 @@ public class TakePoll {
 
                 System.out.println("Enter your name to start " + pollName);
                 pollTaker = keyboard.nextLine();
+                individualResults = pollTaker + "_" + pollTaker;
 
                 statement = connection.createStatement();
 
                 //Create table to store individual results of poll
                 //Referenced https://www.tutorialspoint.com/jdbc/jdbc-create-tables.htm
-                String sql = "CREATE TABLE " + pollName + "_" + pollTaker + " " +
+                String sql = "CREATE TABLE " + individualResults + " " +
                         "(QuestionNumber INTEGER, " +
                         "Response, varchar(100), " +
                         "PRIMARY KEY ( QuestionNumber ))";
                 statement.executeUpdate(sql);
 
+                String readQuestions = ("SELECT * FROM " + pollName);
+
+                ResultSet rs = statement.executeQuery(readQuestions);
+
+                while (rs.next()) {
+
+                    int number = rs.getInt("num");
+                    String type = rs.getString("qtype");
+                    String options = rs.getString("options");
+                    String question = rs.getString("question");
+
+                    System.out.println("Number: " + number + "\nType: " + type + "\nOptions: " + options + "\nQuestion: " + question);
+                    System.out.println("*------------------*");
+
+                    String answer = keyboard.nextLine();
+                    sql =   "INSERT INTO " + pollName +
+                            " VALUES(" + number + ", '" + answer + "')";
+                    statement.executeUpdate(sql);
+                }
+                
             } catch (SQLException sQLE) {
                 sQLE.printStackTrace();
             } catch (Exception e) {
