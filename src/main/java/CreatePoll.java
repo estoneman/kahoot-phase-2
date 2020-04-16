@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+//TODO take out json functionality and directly write to SQL server
 class CreatePoll {
 
     //If file is written successfully, SUCCESS_MESSAGE is printed

@@ -3,14 +3,18 @@ import java.util.Scanner;
 
 public class TakePoll {
 
-    private static Connection findDB() {
+    public static void main(String[] args) {
+        takePoll();
+    }
+
+    private static String findDB() {
         Scanner keyboard = new Scanner(System.in);
         Connection connection = null;
 
         String input;
 
         try {
-            connection = SQLInstructions.connectToPollDB();
+            connection = SQLInstructions.connectToSQL();
             ResultSet rs;
 
             System.out.println("Enter the name of the poll creator to search for poll");
@@ -22,8 +26,7 @@ public class TakePoll {
             while (rs.next()) {
                 String catalogs = rs.getString(1);
                 if (input.equals(catalogs)) {
-                    connection = SQLInstructions.connectToDB(input);
-                    return connection;
+                    return input;
                 } else {
                     System.out.println("Poll creator not found.");
                 }
@@ -31,87 +34,90 @@ public class TakePoll {
         } catch (SQLException sQLE) {
             sQLE.printStackTrace();
         }
-        return connection;
+        return "";
     }
 
-    private static String findPoll() {
+    private static String findPoll(String dBName) {
         Scanner keyboard = new Scanner(System.in);
         Connection connection;
 
         String pollName = "";
         String input;
 
-        if (findDB() != null) {
-            try {
-                connection = findDB();
-                while (true) {
-                    System.out.println("Please enter the poll identifier:");
-                    input = keyboard.nextLine().toLowerCase().trim();
+        try {
+            connection = SQLInstructions.connectToPollDB(dBName);
+            while (true) {
+                System.out.println("Please enter the poll identifier:");
+                input = keyboard.nextLine().toLowerCase().trim();
 
-                    //Check if poll exists in selected database
-                    //Adapted from https://www.rgagnon.com/javadetails/java-0485.html
-                    ResultSet tables = connection.getMetaData().getTables(null, null, input, null);
-                    if (tables.next()) {
-                        System.out.println("Poll found.");
-                        pollName = input;
-                        return pollName;
-                    } else {
-                        System.out.println("Poll does not exist.");
-                    }
+                //Check if poll exists in selected database
+                //Adapted from https://www.rgagnon.com/javadetails/java-0485.html
+                ResultSet tables = connection.getMetaData().getTables(null, null, input, null);
+                if (tables.next()) {
+                    System.out.println("Poll found.");
+                    pollName = input;
+                    return pollName;
+                } else {
+                    System.out.println("Poll does not exist.");
                 }
-            } catch (SQLException sQLE) {
-                sQLE.printStackTrace();
             }
+        } catch (SQLException sQLE) {
+            sQLE.printStackTrace();
         }
+
         return pollName;
     }
 
     public static void takePoll() {
         Scanner keyboard = new Scanner(System.in);
         Connection connection = null;
-        Statement statement = null;
+        Statement connectionStatement = null;
 
-        String pollName;
+        String dBName = findDB();
+        String pollName = findPoll(dBName);
         String pollTaker;
         String individualResults;
 
-        if (!findPoll().equals("")) {
+        if (!pollName.equals("")) {
             try {
-                connection = findDB();
-                pollName = findPoll();
+                connection = SQLInstructions.connectToPollDB(dBName);
 
                 System.out.println("Enter your name to start " + pollName);
                 pollTaker = keyboard.nextLine();
                 individualResults = pollName + "_" + pollTaker;
 
-                statement = connection.createStatement();
+                connectionStatement = connection.createStatement();
 
                 //Create table to store individual results of poll
                 //Referenced https://www.tutorialspoint.com/jdbc/jdbc-create-tables.htm
                 String sql = "CREATE TABLE " + individualResults + " " +
                         "(QuestionNumber INTEGER, " +
-                        "Response, varchar(100), " +
+                        "Response varchar(100), " +
                         "PRIMARY KEY ( QuestionNumber ))";
-                statement.executeUpdate(sql);
+                connectionStatement.executeUpdate(sql);
 
                 String readQuestions = ("SELECT * FROM " + pollName);
 
-                ResultSet rs = statement.executeQuery(readQuestions);
+                connectionStatement = connection.createStatement();
 
-                while (rs.next()) {
+                ResultSet resultSet = connectionStatement.executeQuery(readQuestions);
 
-                    int number = rs.getInt("num");
-                    String type = rs.getString("qtype");
-                    String options = rs.getString("options");
-                    String question = rs.getString("question");
+                while (resultSet.next()) {
 
-                    System.out.println("Number: " + number + "\nType: " + type + "\nOptions: " + options + "\nQuestion: " + question);
+                    connectionStatement = connection.createStatement();
+
+                    int number = resultSet.getInt("QuestionNumber");
+                    String options = resultSet.getString("Options");
+                    String question = resultSet.getString("Question");
+
+                    System.out.println("Number: " + number + "\nOptions: " + options + "\nQuestion: " + question);
                     System.out.println("*------------------*");
 
+                    System.out.println("enter answer here: ");
                     String answer = keyboard.nextLine();
                     sql =   "INSERT INTO " + individualResults +
                             " VALUES(" + number + ", '" + answer + "')";
-                    statement.executeUpdate(sql);
+                    connectionStatement.executeUpdate(sql);
                 }
 
                 System.out.println("Your answers were recorded.");
@@ -123,7 +129,7 @@ public class TakePoll {
             }
             finally {
                 try {
-                    if (statement != null) {
+                    if (connectionStatement != null) {
                         connection.close();
                     } } catch (SQLException se) {
                     }

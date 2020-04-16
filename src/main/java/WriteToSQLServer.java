@@ -39,11 +39,7 @@ class WriteToSQLServer {
             JSONArray jsonArray = (JSONArray) jsonObject.get("Questions");
 
             //connect to database
-<<<<<<< HEAD
-            Connection connection = SQLInstructions.connectToPollDB();
-=======
             Connection connection = SQLInstructions.connectToPollDB(dBName);
->>>>>>> upstream/master
 
             //Insert a row into the pollquestions table
             PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO " + dBName + "." + pollName + " VALUES (?, ?, ?)");
@@ -92,7 +88,7 @@ class WriteToSQLServer {
             //success message to be output to terminal
             System.out.println("POLL QUESTIONS " + WRITTEN_SUCCESS);
         }
-        //for catching any issues with connecitivity with MySQL server
+        //for catching any issues with connectivity with MySQL server
         catch (SQLException sQLE) {
             System.out.println(WRITTEN_FAILURE);
             sQLE.printStackTrace();
@@ -108,58 +104,8 @@ class WriteToSQLServer {
             pE.printStackTrace();
         }
 
-
     }
 
-<<<<<<< HEAD
-    private static void writePollResults() {
-        try {
-            //Parsing the contents of the JSON file
-            JSONArray jsonArray = (JSONArray) new JSONParser().parse(new FileReader("C:/Users/Ethan/StudioProjects/kahoot-phase-2/json/pollResults.json"));
-
-            //connect to database
-            Connection connection = SQLInstructions.connectToPollDB();
-
-            //Insert a row into the MyPlayers table
-            PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO poll_results VALUES (?, ?, ?, ?)");
-
-            for (Object object : jsonArray) {
-                JSONObject record = (JSONObject) object;
-                String response = (String) record.get("Response");
-                String number = (String) record.get("Number");
-                String question = (String) record.get("Question");
-                String taker = (String) record.get("Taker");
-
-                sqlStatement.setString(1, number);
-                sqlStatement.setString(2, question);
-                sqlStatement.setString(3, response);
-                sqlStatement.setString(4, taker);
-
-                sqlStatement.executeUpdate();
-                record.clear();
-            }
-
-            //flushing of any contents
-            sqlStatement.close();
-            connection.close();
-
-            System.out.println("POLL RESULTS " + WRITTEN_SUCCESS);
-        }
-        //for catching any issues with connecitivity with MySQL server
-        catch (SQLException sQLE) {
-            sQLE.printStackTrace();
-        }
-        //for catching any errors while opening json files
-        catch (IOException iOE) {
-            iOE.printStackTrace();
-        }
-        //for catching any JSONParser erros
-        catch (ParseException pE) {
-            pE.printStackTrace();
-        }
-
-    }
-=======
 //    private static void writePollResults() {
 //        try {
 //            //Parsing the contents of the JSON file
@@ -207,5 +153,4 @@ class WriteToSQLServer {
 //        }
 //
 //    }
->>>>>>> upstream/master
 }
