@@ -1,89 +1,81 @@
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
+import com.mysql.cj.x.protobuf.MysqlxPrepare;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ListIterator;
+
+import java.util.Scanner;
 
 class WriteToSQLServer {
 
     private static final String WRITTEN_SUCCESS = "Written successfully";
     private static final String WRITTEN_FAILURE = "Write failed";
 
-    static void run(String pollName, String dBName) {
-        writePollQuestions(pollName, dBName);
-//        writePollResults();
-    }
-
-    @SuppressWarnings("unchecked")
     static void writePollQuestions(String pollName, String dBName) {
 
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
         try {
-            //Creating a JSONParser object
-            JSONParser jsonParser = new JSONParser();
-
-            //for iterating through options JSONArray
-            ListIterator<String> listIterator;
-
-            //Parsing the contents of the JSON file
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(
-                    new FileReader(
-                            System.getProperty("user.dir") + "/json/pollQuestions.json"));
-
-            //retrieve array from json file
-            JSONArray jsonArray = (JSONArray) jsonObject.get("Questions");
+            Scanner keyboard = new Scanner(System.in);
 
             //connect to database
-            Connection connection = SQLInstructions.connectToPollDB(dBName);
+            connection = SQLInstructions.connectToPollDB(dBName);
 
-            //Insert a row into the pollquestions table
-            PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO " + dBName + "." + pollName + " VALUES (?, ?, ?)");
+            int number = 1;//keeps track of question number
 
-            //to reference each object inside JSONArray
-            JSONObject record;
+            //continuously adds question to the poll until user stops
+            while (true) {
+                System.out.println("Enter question " + number + " or enter 'done' when you are finished adding questions: ");
+                String question = keyboard.nextLine().toLowerCase().trim();//converts to lower case and eliminates whitespace characters for easier comparison of strings
 
-            for (Object arrayObject : jsonArray) {
-                record = (JSONObject) arrayObject;
+                if (question.equals("done"))
+                    break;//loop condition
 
-                //getting all fields of pollResults.json
-                String number = (String) record.get("Number");
-                String question = (String) record.get("Question");
-                JSONArray options = (JSONArray) record.get("Options");
+                //non-empty, non fully numerical input
+                while (!Check.isValidNonNumericalInput(question)) {
+                    System.out.println("invalid input");
+                    question = keyboard.nextLine().toLowerCase().trim();
+                }
 
-                listIterator = options.listIterator();
+                int optionNumber = 1;
+                String optionsString = "";
 
-                //building string to convert array to string
-                String optionString = "";
+                while (true) {
+                    System.out.println("Enter option " + optionNumber + " or enter 'done' to stop adding options: ");
+                    String option = keyboard.nextLine().toLowerCase().trim();
 
-                while (listIterator.hasNext())
-                    optionString += listIterator.next() + ":";
+                    if (option.equals("done"))
+                        break;
 
-                //takes off ':' at the end of the options string
-                optionString = optionString.substring(0, optionString.length() - 1);
+                    //non-empty, non fully numerical input
+                    while (!Check.isValidNonNumericalInput(option)) {
+                        System.out.println("invalid input, try again: ");
+                        option = keyboard.nextLine().toLowerCase().trim();
+                    }
 
-                //writing to sql script (pollquestions.sql)
-                sqlStatement.setString(1, number);
-                sqlStatement.setString(2, question);
-                sqlStatement.setString(3, optionString.toString());
+                    //system for adding a string of all options delimited by a ":"
+                    optionsString += option + ":";
+                    optionNumber++;
+                }
 
-                //for executing the write to the ClickersDB server with table contents
-                sqlStatement.executeUpdate();
-                record.clear();
-                options.clear();
+                optionsString = optionsString.substring(0, optionsString.length() - 1);
+
+                String sql = "INSERT INTO " + dBName + "." + pollName + " (Question, `Options`) VALUES (?, ?)";
+
+                preparedStatement = connection.prepareStatement(sql);
+
+                preparedStatement.setString(1, question);
+                preparedStatement.setString(2, optionsString);
+
+                preparedStatement.executeUpdate();
+
+                number++;
+
             }
 
-            //clears all contents of jsonObject
-            jsonObject.clear();
-            jsonArray.clear();
-            sqlStatement.close();
 
-            //closes connection
-            connection.close();
 
             //success message to be output to terminal
             System.out.println("POLL QUESTIONS " + WRITTEN_SUCCESS);
@@ -93,64 +85,22 @@ class WriteToSQLServer {
             System.out.println(WRITTEN_FAILURE);
             sQLE.printStackTrace();
         }
-        //for catching any errors while opening json files
-        catch (IOException iOE) {
-            System.out.println(WRITTEN_FAILURE);
-            iOE.printStackTrace();
-        }
-        //for catching any JSONParser erros
-        catch (ParseException pE) {
-            System.out.println(WRITTEN_FAILURE);
-            pE.printStackTrace();
+        finally {
+            try {
+                if (connection != null) {
+                    //closes connection
+                    connection.close();
+                }
+                if (preparedStatement != null) {
+                    //closes statement
+                    preparedStatement.close();
+                }
+            }
+            catch (SQLException sQLE) {
+                sQLE.printStackTrace();
+            }
         }
 
     }
 
-//    private static void writePollResults() {
-//        try {
-//            //Parsing the contents of the JSON file
-//            JSONArray jsonArray = (JSONArray) new JSONParser().parse(new FileReader(System.getProperty("user.dir") + "/json/pollResults.json"));
-//
-//            //connect to database
-//            Connection connection = SQLInstructions.connectToPollDB();
-//
-//            //Insert a row into the MyPlayers table
-//            PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO poll_results VALUES (?, ?, ?, ?)");
-//
-//            for (Object object : jsonArray) {
-//                JSONObject record = (JSONObject) object;
-//                String response = (String) record.get("Response");
-//                String number = (String) record.get("Number");
-//                String question = (String) record.get("Question");
-//                String taker = (String) record.get("Taker");
-//
-//                sqlStatement.setString(1, number);
-//                sqlStatement.setString(2, question);
-//                sqlStatement.setString(3, response);
-//                sqlStatement.setString(4, taker);
-//
-//                sqlStatement.executeUpdate();
-//                record.clear();
-//            }
-//
-//            //flushing of any contents
-//            sqlStatement.close();
-//            connection.close();
-//
-//            System.out.println("POLL RESULTS " + WRITTEN_SUCCESS);
-//        }
-//        //for catching any issues with connecitivity with MySQL server
-//        catch (SQLException sQLE) {
-//            sQLE.printStackTrace();
-//        }
-//        //for catching any errors while opening json files
-//        catch (IOException iOE) {
-//            iOE.printStackTrace();
-//        }
-//        //for catching any JSONParser errors
-//        catch (ParseException pE) {
-//            pE.printStackTrace();
-//        }
-//
-//    }
 }
