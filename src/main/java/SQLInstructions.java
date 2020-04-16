@@ -1,32 +1,48 @@
 //https://www.tutorialspoint.com/jdbc/jdbc-create-database.htm
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
+import java.util.Properties;
 
 class SQLInstructions {
 
-//    private static final String CONNECTION_ESTABLISHED = "Connection established . . .";
-//    private static final String CONNECTON_FAILED = "Connection failed";
-    private static final String JDBC_PACKAGE = "com.mysql.cj.jdbc.Driver";
-    private static final String MySQLPollURL = "jdbc:mysql://192.168.0.21:3306/";
-    private static final String USER = "MySQLAdmin2";
-    private static final String PASS = "19Soccer99)";
-
     static Connection connectToSQL() {
         Connection connection = null;
+        InputStream propertiesFileStream = null;
 
         try {
+            //load properties file
+            propertiesFileStream = new FileInputStream(System.getProperty("user.dir") + "/src/main/java/database_config.properties");
+
+            Properties dBProperties = new Properties();
+            dBProperties.load(propertiesFileStream);
+
             //Registering the Driver
-            Class.forName(JDBC_PACKAGE);
+            Class.forName(dBProperties.getProperty("jdbc.package"));
             //Getting the connection
-            connection = DriverManager.getConnection(MySQLPollURL, USER, PASS);
+            connection = DriverManager.getConnection(dBProperties.getProperty("mysqlurl"),
+                    dBProperties.getProperty("ethan.user"),
+                    dBProperties.getProperty("ethan.password"));
         }
         catch (Exception e) {
 //            System.out.println(CONNECTON_FAILED);
             e.printStackTrace();
+        }
+        //handles closing the input stream to the properties file
+        finally {
+            try {
+                if (propertiesFileStream != null)
+                    propertiesFileStream.close();
+            }
+            catch (IOException iOE) {
+                iOE.printStackTrace();
+            }
+
         }
 
 //        System.out.println(CONNECTION_ESTABLISHED);
@@ -35,16 +51,35 @@ class SQLInstructions {
 
     static Connection connectToPollDB(String dBName) {
         Connection connection = null;
+        InputStream propertiesFileStream = null;
 
         try {
+            //load properties file
+            propertiesFileStream = new FileInputStream(System.getProperty("user.dir") + "/src/main/java/database_config.properties");
+
+            Properties dBProperties = new Properties();
+            dBProperties.load(propertiesFileStream);
+
             //Registering the Driver
-            Class.forName(JDBC_PACKAGE);
+            Class.forName(dBProperties.getProperty("jdbc.package"));
             //Getting the connection
-            connection = DriverManager.getConnection(MySQLPollURL + dBName, USER, PASS);
+            connection = DriverManager.getConnection(dBProperties.getProperty("mysqlurl") + dBName,
+                    dBProperties.getProperty("ethan.user"),
+                    dBProperties.getProperty("ethan.password"));
         }
         catch (Exception e) {
 //            System.out.println(CONNECTON_FAILED);
             e.printStackTrace();
+        }
+        //handles closing input stream to the properties file
+        finally {
+            try {
+                if (propertiesFileStream != null)
+                    propertiesFileStream.close();
+            }
+            catch (IOException iOE) {
+                iOE.printStackTrace();
+            }
         }
 
 //        System.out.println(CONNECTION_ESTABLISHED);
@@ -91,6 +126,7 @@ class SQLInstructions {
 
     }
 
+    //TODO rename this method
     static void createTable(String tableName, String dBName) {
 
         Connection connection = null;
@@ -108,7 +144,7 @@ class SQLInstructions {
             String sqlInstructions = "CREATE TABLE " + dBName + "." + explicitTableName +
                     "(QuestionNumber INT NOT NULL AUTO_INCREMENT, " +
                     " Question VARCHAR(100), " +
-                    " Options VARCHAR(150), " +
+                    " `Options` VARCHAR(150), " +
                     " PRIMARY KEY (QuestionNumber));";
 
             //execute creating the table

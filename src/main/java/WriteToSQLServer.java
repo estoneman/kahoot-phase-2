@@ -88,7 +88,7 @@ class WriteToSQLServer {
             //success message to be output to terminal
             System.out.println("POLL QUESTIONS " + WRITTEN_SUCCESS);
         }
-        //for catching any issues with connecitivity with MySQL server
+        //for catching any issues with connectivity with MySQL server
         catch (SQLException sQLE) {
             System.out.println(WRITTEN_FAILURE);
             sQLE.printStackTrace();
@@ -103,7 +103,6 @@ class WriteToSQLServer {
             System.out.println(WRITTEN_FAILURE);
             pE.printStackTrace();
         }
-
 
     }
 
