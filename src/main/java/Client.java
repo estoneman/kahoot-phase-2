@@ -35,10 +35,7 @@ public class Client {
 
         if (pollOrQuiz.equals("p")) {
 
-            System.out.println("Enter your name or unique ID to identify yourself as the poll creator: ");
-            String name = sc.nextLine().toLowerCase().trim();
-
-            PollGenerator.generatePoll(name);
+            CreatePoll.generatePoll();
 
             System.out.println("Would you like to take the created poll(y/n)? If not, enter 'done' or 'no' to exit: ");
             input = sc.nextLine().toLowerCase().trim();
@@ -49,14 +46,12 @@ public class Client {
 
             if (input.equals("yes") || input.equals("y")) {
                 System.out.println("Enter your name: ");
-                name = sc.nextLine().toLowerCase().trim();
+                String name = sc.nextLine().toLowerCase().trim();
 
                 JSONArray pollResults = Poll.takePoll(name);
                 Poll.printJSONArray(pollResults);
             }
 
-            WriteToSQLServer.run();
-            ReadSQLServer.run();
         }
         else {
             //Write the quiz
