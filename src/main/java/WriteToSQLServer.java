@@ -15,13 +15,13 @@ class WriteToSQLServer {
     private static final String WRITTEN_SUCCESS = "Written successfully";
     private static final String WRITTEN_FAILURE = "Write failed";
 
-    static void run() {
-        writePollQuestions();
-        writePollResults();
+    static void run(String pollName, String dBName) {
+        writePollQuestions(pollName, dBName);
+//        writePollResults();
     }
 
     @SuppressWarnings("unchecked")
-    private static void writePollQuestions() {
+    static void writePollQuestions(String pollName, String dBName) {
 
         try {
             //Creating a JSONParser object
@@ -33,16 +33,20 @@ class WriteToSQLServer {
             //Parsing the contents of the JSON file
             JSONObject jsonObject = (JSONObject) jsonParser.parse(
                     new FileReader(
-                            "C:/Users/Ethan/StudioProjects/kahoot-phase-2/json/pollQuestions.json"));
+                            System.getProperty("user.dir") + "/json/pollQuestions.json"));
 
             //retrieve array from json file
             JSONArray jsonArray = (JSONArray) jsonObject.get("Questions");
 
             //connect to database
+<<<<<<< HEAD
             Connection connection = SQLInstructions.connectToPollDB();
+=======
+            Connection connection = SQLInstructions.connectToPollDB(dBName);
+>>>>>>> upstream/master
 
             //Insert a row into the pollquestions table
-            PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO poll_questions VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO " + dBName + "." + pollName + " VALUES (?, ?, ?)");
 
             //to reference each object inside JSONArray
             JSONObject record;
@@ -51,26 +55,25 @@ class WriteToSQLServer {
                 record = (JSONObject) arrayObject;
 
                 //getting all fields of pollResults.json
-                String type = (String) record.get("Type");
                 String number = (String) record.get("Number");
                 String question = (String) record.get("Question");
                 JSONArray options = (JSONArray) record.get("Options");
-                String user = (String) record.get("User");
 
                 listIterator = options.listIterator();
 
                 //building string to convert array to string
-                StringBuilder optionString = new StringBuilder();
+                String optionString = "";
 
                 while (listIterator.hasNext())
-                    optionString.append(listIterator.next()).append(" ");
+                    optionString += listIterator.next() + ":";
+
+                //takes off ':' at the end of the options string
+                optionString = optionString.substring(0, optionString.length() - 1);
 
                 //writing to sql script (pollquestions.sql)
                 sqlStatement.setString(1, number);
-                sqlStatement.setString(2, type);
+                sqlStatement.setString(2, question);
                 sqlStatement.setString(3, optionString.toString());
-                sqlStatement.setString(4, question);
-                sqlStatement.setString(5, user);
 
                 //for executing the write to the ClickersDB server with table contents
                 sqlStatement.executeUpdate();
@@ -108,6 +111,7 @@ class WriteToSQLServer {
 
     }
 
+<<<<<<< HEAD
     private static void writePollResults() {
         try {
             //Parsing the contents of the JSON file
@@ -155,4 +159,53 @@ class WriteToSQLServer {
         }
 
     }
+=======
+//    private static void writePollResults() {
+//        try {
+//            //Parsing the contents of the JSON file
+//            JSONArray jsonArray = (JSONArray) new JSONParser().parse(new FileReader(System.getProperty("user.dir") + "/json/pollResults.json"));
+//
+//            //connect to database
+//            Connection connection = SQLInstructions.connectToPollDB();
+//
+//            //Insert a row into the MyPlayers table
+//            PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO poll_results VALUES (?, ?, ?, ?)");
+//
+//            for (Object object : jsonArray) {
+//                JSONObject record = (JSONObject) object;
+//                String response = (String) record.get("Response");
+//                String number = (String) record.get("Number");
+//                String question = (String) record.get("Question");
+//                String taker = (String) record.get("Taker");
+//
+//                sqlStatement.setString(1, number);
+//                sqlStatement.setString(2, question);
+//                sqlStatement.setString(3, response);
+//                sqlStatement.setString(4, taker);
+//
+//                sqlStatement.executeUpdate();
+//                record.clear();
+//            }
+//
+//            //flushing of any contents
+//            sqlStatement.close();
+//            connection.close();
+//
+//            System.out.println("POLL RESULTS " + WRITTEN_SUCCESS);
+//        }
+//        //for catching any issues with connecitivity with MySQL server
+//        catch (SQLException sQLE) {
+//            sQLE.printStackTrace();
+//        }
+//        //for catching any errors while opening json files
+//        catch (IOException iOE) {
+//            iOE.printStackTrace();
+//        }
+//        //for catching any JSONParser errors
+//        catch (ParseException pE) {
+//            pE.printStackTrace();
+//        }
+//
+//    }
+>>>>>>> upstream/master
 }
