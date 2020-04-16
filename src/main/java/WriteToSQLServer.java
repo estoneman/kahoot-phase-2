@@ -39,7 +39,7 @@ class WriteToSQLServer {
             JSONArray jsonArray = (JSONArray) jsonObject.get("Questions");
 
             //connect to database
-            Connection connection = ConnectToDatabase.connectToPollDB();
+            Connection connection = SQLInstructions.connectToPollDB();
 
             //Insert a row into the pollquestions table
             PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO poll_questions VALUES (?, ?, ?, ?, ?)");
@@ -114,7 +114,7 @@ class WriteToSQLServer {
             JSONArray jsonArray = (JSONArray) new JSONParser().parse(new FileReader("C:/Users/Ethan/StudioProjects/kahoot-phase-2/json/pollResults.json"));
 
             //connect to database
-            Connection connection = ConnectToDatabase.connectToPollDB();
+            Connection connection = SQLInstructions.connectToPollDB();
 
             //Insert a row into the MyPlayers table
             PreparedStatement sqlStatement = connection.prepareStatement("INSERT INTO poll_results VALUES (?, ?, ?, ?)");

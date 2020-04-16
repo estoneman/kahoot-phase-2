@@ -1,5 +1,3 @@
-import org.json.simple.parser.ParseException;
-
 import java.sql.*;
 import java.util.Scanner;
 
@@ -12,7 +10,7 @@ public class TakePoll {
         String input;
 
         try {
-            connection = ConnectToDatabase.connectToPollDB();
+            connection = SQLInstructions.connectToPollDB();
             ResultSet rs;
 
             System.out.println("Enter the name of the poll creator to search for poll");
@@ -24,7 +22,7 @@ public class TakePoll {
             while (rs.next()) {
                 String catalogs = rs.getString(1);
                 if (input.equals(catalogs)) {
-                    connection = ConnectToDatabase.connectToDB(input);
+                    connection = SQLInstructions.connectToDB(input);
                     return connection;
                 } else {
                     System.out.println("Poll creator not found.");
@@ -84,7 +82,7 @@ public class TakePoll {
 
                 System.out.println("Enter your name to start " + pollName);
                 pollTaker = keyboard.nextLine();
-                individualResults = pollTaker + "_" + pollTaker;
+                individualResults = pollName + "_" + pollTaker;
 
                 statement = connection.createStatement();
 
@@ -111,10 +109,12 @@ public class TakePoll {
                     System.out.println("*------------------*");
 
                     String answer = keyboard.nextLine();
-                    sql =   "INSERT INTO " + pollName +
+                    sql =   "INSERT INTO " + individualResults +
                             " VALUES(" + number + ", '" + answer + "')";
                     statement.executeUpdate(sql);
                 }
+
+                System.out.println("Your answers were recorded.");
                 
             } catch (SQLException sQLE) {
                 sQLE.printStackTrace();
