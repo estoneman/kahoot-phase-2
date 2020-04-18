@@ -17,10 +17,10 @@ class WriteToProperties {
             dBInformation = new Properties();
 
             //set values
-            dBInformation.setProperty("mysqlurl", "jdbc:mysql://192.168.0.21:3306/");
+            dBInformation.setProperty("mysqlurl", "jdbc:mysql://192.168.0.107:3306/");
             dBInformation.setProperty("jdbc.package", "com.mysql.cj.jdbc.Driver");
-            dBInformation.setProperty("ethan.user", "MySQLAdmin2");
-            dBInformation.setProperty("ethan.password", "19Soccer99)");
+            dBInformation.setProperty("ethan.user", "MySQLAdmin");
+            dBInformation.setProperty("ethan.password", "19Soccer99(");
 
             dBInformation.store(stream, null);
 
