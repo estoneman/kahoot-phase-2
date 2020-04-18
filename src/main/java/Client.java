@@ -45,29 +45,25 @@ public class Client {
             }
 
             if (input.equals("yes") || input.equals("y")) {
-                System.out.println("Enter your name: ");
-                String name = sc.nextLine().toLowerCase().trim();
-
-                JSONArray pollResults = Poll.takePoll(name);
-                Poll.printJSONArray(pollResults);
+                TakePoll.takePoll();
             }
 
         }
-        else {
-            //Write the quiz
-            QuizGenerator.generateQuiz();
-
-            System.out.println("\nEnter your name to take the quiz or enter done to exit:\n");
-            input = sc.nextLine();
-
-            if (!input.equals("done")) {
-
-                //If user wants to take the quiz, calls Quiz method
-                JSONArray results = Quiz.takeQuiz(input);
-
-                //Calls printResults method in Quiz.java to record user's results
-                Quiz.printResults(results, input);
-            }
-        }
+//        else {
+//            //Write the quiz
+//            QuizGenerator.generateQuiz();
+//
+//            System.out.println("\nEnter your name to take the quiz or enter done to exit:\n");
+//            input = sc.nextLine();
+//
+//            if (!input.equals("done")) {
+//
+//                //If user wants to take the quiz, calls Quiz method
+//                JSONArray results = Quiz.takeQuiz(input);
+//
+//                //Calls printResults method in Quiz.java to record user's results
+//                Quiz.printResults(results, input);
+//            }
+//        }
     }
 }
