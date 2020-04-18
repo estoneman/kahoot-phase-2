@@ -23,7 +23,7 @@ class CreatePoll {
 
         //if poll already exists, continue. if not, create a new one
         if (!Check.tableExists(pollName, unique_identifier))
-            SQLInstructions.createQuestionsTable(pollName, unique_identifier);
+            SQLInstructions.createPollQuestionsTable(pollName, unique_identifier);
 
         //make poll questionnaire and write to sql server
         WriteToSQLServer.writePollQuestions(pollName, unique_identifier);
