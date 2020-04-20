@@ -1,36 +1,36 @@
 import java.sql.*;
 import java.util.Scanner;
 
-public class TakePoll extends ReadSQLServer {
+public class Take extends ReadSQLServer {
 
     public static void main(String[] args) {
-        takePoll();
+        take("quiz"); //qp is quiz or poll. Just changes the printed statements to match
     }
 
-    public static void takePoll() {
+    public static void take(String qp) {
         Scanner keyboard = new Scanner(System.in);
         Connection connection = null;
         Statement connectionStatement = null;
 
-        String dBName = ReadSQLServer.findDB("Poll");
-        String pollName = findTable(dBName, "Poll");
-        String pollTaker;
+        String dBName = ReadSQLServer.findDB(qp);
+        String tableName = findTable(dBName, qp);
+        String taker;
         String individualResults;
-        boolean overwrite = false;
+        boolean tableExists = false;
         String sql;
 
-        if (!pollName.equals("")) {
+        if (!tableName.equals("")) {
             try {
                 connection = SQLInstructions.connectToDB(dBName);
 
-                System.out.println("Enter your name to start " + pollName);
-                pollTaker = keyboard.nextLine();
-                individualResults = pollName + "_" + pollTaker;
+                System.out.println("Enter your name to start " + tableName);
+                taker = keyboard.nextLine();
+                individualResults = tableName + "_" + taker;
 
                 connectionStatement = connection.createStatement();
 
                 if (Check.tableExists(individualResults,dBName)) {
-                    overwrite = true;
+                    tableExists = true;
                 } else {
                     //Create table to store individual results of poll
                     //Referenced https://www.tutorialspoint.com/jdbc/jdbc-create-tables.htm
@@ -41,7 +41,7 @@ public class TakePoll extends ReadSQLServer {
                     connectionStatement.executeUpdate(sql);
                 }
 
-                String readQuestions = ("SELECT * FROM " + pollName);
+                String readQuestions = ("SELECT * FROM " + tableName);
 
                 connectionStatement = connection.createStatement();
 
@@ -60,13 +60,13 @@ public class TakePoll extends ReadSQLServer {
 
                     System.out.println("enter answer here: ");
                     String answer = keyboard.nextLine();
-                    if (!overwrite) {
+                    if (!tableExists) {
                         sql = "INSERT INTO " + individualResults +
                                 " VALUES(" + number + ", '" + answer + "')";
                     } else {
-                        sql = "UPDATE " + individualResults +
-                                "SET Response = " + answer +
-                                "WHERE QuestionNumber = " + number;
+                            sql = "UPDATE " + individualResults +
+                                    "SET Response = " + answer +
+                                    "WHERE QuestionNumber = " + number;
                     }
                     connectionStatement.executeUpdate(sql);
                 }
