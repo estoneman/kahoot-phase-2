@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class Take extends ReadSQLServer {
 
     public static void main(String[] args) {
-        take("quiz"); //qp is quiz or poll. Just changes the printed statements to match
+        take("Quiz"); //qp is quiz or poll. Just changes the printed statements to match
     }
 
     public static void take(String qp) {
@@ -64,9 +64,9 @@ public class Take extends ReadSQLServer {
                         sql = "INSERT INTO " + individualResults +
                                 " VALUES(" + number + ", '" + answer + "')";
                     } else {
-                            sql = "UPDATE " + individualResults +
-                                    "SET Response = " + answer +
-                                    "WHERE QuestionNumber = " + number;
+                        sql = "UPDATE " + individualResults +
+                                "SET Response = " + answer +
+                                "WHERE QuestionNumber = " + number;
                     }
                     connectionStatement.executeUpdate(sql);
                 }
