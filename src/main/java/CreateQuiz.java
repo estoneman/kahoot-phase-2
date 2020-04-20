@@ -1,233 +1,87 @@
-import org.json.simple.*;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
+import java.util.Scanner;
+
+class CreateQuiz {
+
+    private static final Scanner keyboard = new Scanner(System.in);
+
+
+
+        //connect to db (name = username)
+            //create new if non-existent
+        //connect to db.table regardless of question type there will only be one table per quiz which is a collection of all question types (name = quiz name)
+            //the user will decide what type to add to the single table with name of the quiz they will create
+        //ask which type they want to enter
+            //go to the method that handles each question type (tf, mc, fb, m)
+            //keep looping until they are done adding questions
+
+            /*
+            * fields for true/false, multiple choice: question number, question, options (true/false)
+            * fields for fill in the blank: question number, question, options (possible answers)
+            * fields for matching: question number, question/instructions, options
+            *
+            *       options for matching questions
+            *           for writing to sql server, write the term and matched term in the following form "option1:match1,option2:match2,...,option(n):match(n)"
+            *           in the options field for easy parsing
+            *           read each option and match as a key, value pair into a hash map called answerHashMap or some other name to that effect
+            *           in order to display only the options create a map iterator to only get the keys which represent the terms that need to be matched
+            *           in order to check if the answers are correct, get the key, value pair and compare the values to the user input
+            *               if they are equal, they got it correct; else, they got it wrong
+            *
+            */
+
+            //create new if non-existent (in correct model)
 
-public class CreateQuiz {
-
-    //file paths for my (Ethan's) computer
-    String TRUE_FALSE_PATH = System.getProperty("user.dir") + "/json/trueFalse.json";
-    String MULTIPLE_CHOICE_PATH = System.getProperty("user.dir") + "/json/multipleChoice.json";
-    String FILL_IN_BLANK_PATH = System.getProperty("user.dir") + "/json/fillInBlank.json";
-    String MATCHING_PATH = System.getProperty("user.dir") + "/json/matching.json";
-
-    FileWriter fileWriter;//single file writer that writes to all of our json files
-
-    //method that asks user for input
-    @SuppressWarnings("unchecked")
-    public void userInput() {
-
-        Scanner keyboard = new Scanner(System.in);//for accessing user input via keyboard
-
-        JSONObject questionDetails;
-        JSONObject questionObject;
-        JSONArray questionArray = new JSONArray();
-
-        //question type that the user will type in
-        String qType, answer, option, numOptions, numQuestions, userPermission;
-        String question = "";//actual question the user will type in
-        String multipleChoiceKeyString = "";
-
-        boolean creating = true;//loop control for the entire creating process
-        boolean creatingQuestion;//loop control for creating each question
-        boolean creatingOptions;//loop control for creating options in multiple choice questions
-
-        int loopCounter;//for number of options for multiple choice
-
-        ArrayList<String> arrayList;
-
-        while (creating) {
-            loopCounter = 0;
-
-            creatingQuestion = true;
-
-            System.out.println("What kind of question would you like to add?\n1. tf\n2. mc\n3. fb\n4. m");
-            qType = keyboard.nextLine();
-
-            if (qType.equalsIgnoreCase("quit"))
-                creating = false;
-
-            switch (qType) {
-                case "tf":
-                    //these two lines avoids any duplicate strings to be written to json files by emptying the contents each time a new question set is created
-                    questionArray = new JSONArray();
-                    questionObject = new JSONObject();
-
-                    while (creatingQuestion) {
-
-                        questionDetails = new JSONObject();//initializes the JSONObject to be added to the JSONArray so there are no duplicate objects
-                        System.out.println("Enter the true/false question you would like to add\nEnter 'quit' to stop adding true/false questions: ");
-                        question = keyboard.nextLine();
-
-                        //user will get out of creating true false questions if they enter 'quit' so they have full control
-                        if (question.equalsIgnoreCase("quit"))
-                            creatingQuestion = false;
-
-                        else {
-                            System.out.println("Type the answer to '" + question + "': ");
-                            answer = keyboard.nextLine();
-
-                            questionDetails.put(question, answer);//packs the question and answer into its own unique JSONObject
-                            questionArray.add(questionDetails);//adds the above JSONObject to an array of JSONObjects
-
-                        }
-
-                    }
-
-                    questionObject.put(qType, questionArray);//puts the key as "tf" and the value as the JSONArray of JSONObjects with questions and answer as key, value pair
-
-                    writeToFile(TRUE_FALSE_PATH, questionObject);//writes the entire packed question object to the specified file
-                    break;
-
-                case "mc":
-                    //these two lines avoids any duplicate strings to be written to json files by emptying the contents each time a new question set is created
-                    questionArray = new JSONArray();
-                    questionObject = new JSONObject();
-
-                    arrayList = new ArrayList<String>();//for checking duplicate options
-
-                    while (creatingQuestion) {
-                        questionDetails = new JSONObject();
-                        creatingOptions = true;
-
-                        System.out.println("Enter the multiple choice question you would like to add\nEnter 'quit' to stop adding multiple choice questions: ");
-                        question = keyboard.nextLine();
-
-                        //this string will be used as the key in the key, value pair of each object within the array stored in multipleChoice.json
-                        multipleChoiceKeyString = question;
-
-                        if (question.equalsIgnoreCase("quit"))
-                            creatingQuestion = false;
-
-                        else {
-                            //controls how many options the user wants to create
-                            while (creatingOptions) {
-
-                                System.out.println("Enter option or enter nothing to stop adding options: ");
-                                option = keyboard.nextLine();
-
-                                arrayList.add(option);
-
-                                if (option.equals(""))
-                                    creatingOptions = false;
-                                else {
-                                    multipleChoiceKeyString += " " + option;//concatenates option to the end of the question in order to fit our consistent question modeling
-                                }
-                            }
-
-                            System.out.println("Enter the answer to '" + question + "': ");
-                            answer = keyboard.nextLine();
-
-                            //makes sure the user enters an answer that is part of the option set
-                            while (!arrayList.contains(answer)) {
-                                System.out.println(answer + " is not in the option set, enter the answer again: ");
-                                answer = keyboard.nextLine();
-                            }
-
-                            questionDetails.put(multipleChoiceKeyString, answer);//packs the question and answer into its own unique JSONObject
-                            questionArray.add(questionDetails);//adds the above JSONObject to an array of JSONObjects
-
-                        }
-                    }
-
-                    questionObject.put(qType, questionArray);//puts the key as "mc" and the value as the JSONArray of JSONObjects with questions and answer as key, value pair
-
-                    writeToFile(MULTIPLE_CHOICE_PATH, questionObject);
-                    break;
-
-                case "fb":
-                    //these two lines avoids any duplicate strings to be written to json files by emptying the contents each time a new question set is created
-                    questionArray = new JSONArray();
-                    questionObject = new JSONObject();
-
-                    while (creatingQuestion) {
-
-                        questionDetails = new JSONObject();//initializes the JSONObject to be added to the JSONArray so there are no duplicate objects
-                        System.out.println("Enter the fill-in-the-blank question\nEnter 'quit' when finished: ");
-                        question = keyboard.nextLine();
-
-                        if (question.equalsIgnoreCase("quit"))
-                            creatingQuestion = false;
-
-                        else {
-                            System.out.println("Type the answer to '" + question + "': ");
-                            answer = keyboard.nextLine();
-
-                            questionDetails.put(question, answer);//packs the question and answer into its own unique JSONObject
-                            questionArray.add(questionDetails);//adds the above JSONObject to an array of JSONObjects
-
-                        }
-
-                    }
-
-                    questionObject.put(qType, questionArray);//puts the key as "fb" and the value as the JSONArray of JSONObjects with questions and answer as key, value pair
-
-                    writeToFile(FILL_IN_BLANK_PATH, questionObject);
-                    break;
-
-                case "m":
-
-                    questionArray = new JSONArray();
-                    questionObject = new JSONObject();
-
-                    while (creatingQuestion) {
-
-                        questionDetails = new JSONObject();
-
-                        System.out.println("Enter a term that you wish to match with another term\nEnter 'quit' when finished: ");
-                        question = keyboard.nextLine();
-
-                        if (question.equalsIgnoreCase("quit"))
-                            creatingQuestion = false;
-                        else {
-                            System.out.println("Enter the match to " + question);
-                            answer = keyboard.nextLine();
-
-                            questionDetails.put(question, answer);
-                            questionArray.add(questionDetails);
-                        }
-                    }
-
-                    questionObject.put("matching", questionArray);
-
-                    writeToFile(MATCHING_PATH, questionObject);
-
-                    break;
-
-            }
-
-            System.out.println("Would you like to add another question type?(y/n): ");
-            userPermission = keyboard.nextLine();
-
-            if (userPermission.equalsIgnoreCase("n")) {
-                System.out.println("goodbye");
-                creating = false;
-            }
-            else
-                continue;
-
-        }
-
-        keyboard.close();
-
-    }
-
-    //writes to given file with given JSONObject
-    public void writeToFile(String filePath, JSONObject jsonObject) {
-        try {
-            fileWriter = new FileWriter(filePath);
-            fileWriter.write(jsonObject.toJSONString());
-
-            fileWriter.flush();
-        }
-        catch (Exception e) {
-            System.out.println(e.toString());
-        }
-    }
-
-    //for testing purposes
     public static void main(String[] args) {
-        new CreateQuiz().userInput();
+        generateQuiz();
+    }
+
+    static void generateQuiz() {
+        System.out.println("Enter your name or any unique identifier: ");
+        String unique_identifier = keyboard.nextLine().toLowerCase().trim();
+
+        //check if input is actually valid
+        while (!Check.isValidNonNumericalInput(unique_identifier)) {
+            System.out.println(unique_identifier + " is an invalid name for database, try again: ");
+            unique_identifier = keyboard.nextLine().toLowerCase().trim();
+        }
+
+        //if database does not already exist, create a new one
+        if (!Check.dBExists(unique_identifier))
+            SQLInstructions.createDatabase(unique_identifier);
+
+        System.out.println("Enter the name of the quiz you would like to create: ");
+        String tableName = keyboard.nextLine().toLowerCase().trim();
+
+        while (!Check.isValidNonNumericalInput(tableName)) {
+            System.out.println(tableName + " is an invalid input, try again: ");
+            tableName = keyboard.nextLine().toLowerCase().trim();
+        }
+
+        //if poll already exists, continue. if not, create a new one
+        if (!Check.tableExists(tableName, unique_identifier))
+            SQLInstructions.createQuestionsTable(tableName, unique_identifier);
+
+        while (true) {
+            System.out.println("What question type would you like to enter?\ntf = true/false\nmc = multiple choice\nm = matching\nfb = fill in the blank: ");
+            System.out.println("Enter 'done' when you are finished adding questions: ");
+            String type = keyboard.nextLine().toLowerCase().trim();
+
+            if (type.equals("done"))
+                break;
+
+            else {
+                if (type.equals("tf"))
+                    WriteToSQLServer.writeTrueFalse(tableName, unique_identifier);
+                if (type.equals("mc") || type.equals("fb"))
+                    WriteToSQLServer.writeMultipleChoice(tableName, unique_identifier, type);
+                else if (type.equals("m"))
+                    WriteToSQLServer.writeMatching(tableName, unique_identifier);
+                else {
+                    System.out.println("no question type selected, pick one of the given options (tf, mc, m, fb");
+                }
+            }
+
+        }
     }
 
 }
