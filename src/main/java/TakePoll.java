@@ -16,6 +16,8 @@ public class TakePoll extends ReadSQLServer {
         String pollName = findTable(dBName, "Poll");
         String pollTaker;
         String individualResults;
+        boolean overwrite = false;
+        String sql;
 
         if (!pollName.equals("")) {
             try {
@@ -27,13 +29,17 @@ public class TakePoll extends ReadSQLServer {
 
                 connectionStatement = connection.createStatement();
 
-                //Create table to store individual results of poll
-                //Referenced https://www.tutorialspoint.com/jdbc/jdbc-create-tables.htm
-                String sql = "CREATE TABLE " + individualResults + " " +
-                        "(QuestionNumber INTEGER, " +
-                        "Response varchar(100), " +
-                        "PRIMARY KEY ( QuestionNumber ))";
-                connectionStatement.executeUpdate(sql);
+                if (Check.tableExists(individualResults,dBName)) {
+                    overwrite = true;
+                } else {
+                    //Create table to store individual results of poll
+                    //Referenced https://www.tutorialspoint.com/jdbc/jdbc-create-tables.htm
+                    sql = "CREATE TABLE " + individualResults + " " +
+                            "(QuestionNumber INTEGER, " +
+                            "Response varchar(100), " +
+                            "PRIMARY KEY ( QuestionNumber ))";
+                    connectionStatement.executeUpdate(sql);
+                }
 
                 String readQuestions = ("SELECT * FROM " + pollName);
 
@@ -54,8 +60,14 @@ public class TakePoll extends ReadSQLServer {
 
                     System.out.println("enter answer here: ");
                     String answer = keyboard.nextLine();
-                    sql =   "INSERT INTO " + individualResults +
-                            " VALUES(" + number + ", '" + answer + "')";
+                    if (!overwrite) {
+                        sql = "INSERT INTO " + individualResults +
+                                " VALUES(" + number + ", '" + answer + "')";
+                    } else {
+                        sql = "UPDATE " + individualResults +
+                                "SET Response = " + answer +
+                                "WHERE QuestionNumber = " + number;
+                    }
                     connectionStatement.executeUpdate(sql);
                 }
 
