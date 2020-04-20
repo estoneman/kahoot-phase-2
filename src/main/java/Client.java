@@ -1,11 +1,7 @@
 import org.json.simple.parser.ParseException;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.Scanner;
-import org.json.simple.JSONArray;
-
-import javax.swing.*;
 
 public class Client {
 
@@ -45,7 +41,7 @@ public class Client {
             }
 
             if (input.equals("yes") || input.equals("y")) {
-                TakePoll.takePoll();
+                Take.take("Poll");
             }
 
         }
