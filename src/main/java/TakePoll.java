@@ -1,71 +1,10 @@
 import java.sql.*;
 import java.util.Scanner;
 
-public class TakePoll {
+public class TakePoll extends ReadSQLServer {
 
     public static void main(String[] args) {
         takePoll();
-    }
-
-    private static String findDB() {
-        Scanner keyboard = new Scanner(System.in);
-        Connection connection = null;
-
-        String input;
-
-        try {
-            connection = SQLInstructions.connectToSQL();
-            ResultSet rs;
-
-            System.out.println("Enter the name of the poll creator to search for poll");
-            input = keyboard.nextLine().toLowerCase().trim();
-
-            //Check if database exists
-            //Adapted from https://www.javaartifacts.com/check-if-database-exists-using-java/
-            rs = connection.getMetaData().getCatalogs();
-            while (rs.next()) {
-                String catalogs = rs.getString(1);
-                if (input.equals(catalogs)) {
-                    return input;
-                } else {
-                    System.out.println("Poll creator not found.");
-                }
-            }
-        } catch (SQLException sQLE) {
-            sQLE.printStackTrace();
-        }
-        return "";
-    }
-
-    private static String findPoll(String dBName) {
-        Scanner keyboard = new Scanner(System.in);
-        Connection connection;
-
-        String pollName = "";
-        String input;
-
-        try {
-            connection = SQLInstructions.connectToPollDB(dBName);
-            while (true) {
-                System.out.println("Please enter the poll identifier:");
-                input = keyboard.nextLine().toLowerCase().trim();
-
-                //Check if poll exists in selected database
-                //Adapted from https://www.rgagnon.com/javadetails/java-0485.html
-                ResultSet tables = connection.getMetaData().getTables(null, null, input, null);
-                if (tables.next()) {
-                    System.out.println("Poll found.");
-                    pollName = input;
-                    return pollName;
-                } else {
-                    System.out.println("Poll does not exist.");
-                }
-            }
-        } catch (SQLException sQLE) {
-            sQLE.printStackTrace();
-        }
-
-        return pollName;
     }
 
     public static void takePoll() {
@@ -73,14 +12,14 @@ public class TakePoll {
         Connection connection = null;
         Statement connectionStatement = null;
 
-        String dBName = findDB();
-        String pollName = findPoll(dBName);
+        String dBName = ReadSQLServer.findDB("Poll");
+        String pollName = findTable(dBName, "Poll");
         String pollTaker;
         String individualResults;
 
         if (!pollName.equals("")) {
             try {
-                connection = SQLInstructions.connectToPollDB(dBName);
+                connection = SQLInstructions.connectToDB(dBName);
 
                 System.out.println("Enter your name to start " + pollName);
                 pollTaker = keyboard.nextLine();
