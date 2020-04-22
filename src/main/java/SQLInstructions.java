@@ -45,7 +45,6 @@ class SQLInstructions {
 
         }
 
-//        System.out.println(CONNECTION_ESTABLISHED);
         return connection;
     }
 
@@ -170,7 +169,7 @@ class SQLInstructions {
 
     }
 
-    static void createQuestionsTable(String tableName, String dBName) {
+    static void createQuizQuestionsTable(String tableName, String dBName) {
 
         Connection connection = null;
         Statement statement = null;
