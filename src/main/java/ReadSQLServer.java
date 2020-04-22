@@ -2,10 +2,22 @@
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
 class ReadSQLServer {
+
+    public static void main(String[] args) {
+        System.out.println(getQuestion("ethan", "quiz_one", 1));
+        System.out.println(getQuestionType("ethan", "quiz_one", 4));
+        System.out.println(getAnswer("ethan", "quiz_one", 3));
+        String[] arr = getOptions("ethan", "quiz_one", 2);
+        for (int i = 0; i < arr.length; i++) {
+            System.out.println(arr[i]);
+        }
+
+    }
 
     protected static String findDB(String qp) {
         Scanner keyboard = new Scanner(System.in);
@@ -81,21 +93,37 @@ class ReadSQLServer {
 
     public static String get(String s, String dBName, String table, int number ) {
         String genericString = "";
+        Connection connection = null;
+        Statement stmt = null;
 
         try {
-            Connection connection = null;
-            Statement stmt = null;
+
             ResultSet rs;
 
             connection = SQLInstructions.connectToDB(dBName);
+            stmt = connection.createStatement();
 
-            String sql = "SELECT " + s + " FROM " + table + "WHERE " + " QuestionNumber = " + number;
+            String sql = "SELECT " + s + " FROM " + table + " WHERE " + " QuestionNumber = " + number;
 
             rs = stmt.executeQuery(sql);
-            s = rs.getString(1);
+            if (rs.next())
+                genericString = rs.getString(1);
+            else
+                genericString = "element not found";
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            try {
+                if (connection != null)
+                    connection.close();
+                if (stmt != null)
+                    connection.close();
+            }
+            catch (SQLException sQLE) {
+                sQLE.printStackTrace();
+            }
         }
         return genericString;
     }
