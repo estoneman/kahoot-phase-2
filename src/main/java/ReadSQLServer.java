@@ -1,8 +1,8 @@
 //https://www.tutorialspoint.com/jdbc/jdbc-select-records.htm
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Scanner;
 
 class ReadSQLServer {
@@ -79,4 +79,40 @@ class ReadSQLServer {
         return tableName;
     }
 
+    public static String get(String s, String dBName, String table, int number ) {
+        String genericString = "";
+
+        try {
+            Connection connection = null;
+            Statement stmt = null;
+            ResultSet rs;
+
+            connection = SQLInstructions.connectToDB(dBName);
+
+            String sql = "SELECT " + s + " FROM " + table + "WHERE " + " QuestionNumber = " + number;
+
+            rs = stmt.executeQuery(sql);
+            s = rs.getString(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return genericString;
+    }
+
+    public static String getQuestion(String dBName, String table, int number) {
+        return get("Question", dBName, table, number);
+    }
+
+    public static String getQuestionType(String dBName, String table, int number) {
+        return get("QuestionType", dBName, table, number);
+    }
+
+    public static String[] getOptions(String dBName, String table, int number) {
+        return get("Options", dBName, table, number).split(":");
+    }
+
+    public static String getAnswer(String dBName, String table, int number) {
+        return get("Answer", dBName, table, number);
+    }
 }
